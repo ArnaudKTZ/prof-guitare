@@ -120,6 +120,21 @@ pre.tab {
 .btn.ecouter { background: var(--bg-carte-2); color: var(--accent); border: 1px solid var(--accent); }
 .btn.ecouter.joue { background: var(--accent); color: #1a1a1f; border-color: var(--accent); }
 
+.niveau-nav {
+  display: flex; align-items: center; gap: 8px;
+  margin: 10px 0 4px;
+  background: var(--bg-carte-2); border-radius: 12px; padding: 6px;
+}
+.niveau-nav .niv-label {
+  flex: 1; text-align: center; font-size: 13px; font-weight: 700; color: var(--accent);
+}
+.niv-btn {
+  width: 40px; height: 34px; flex: none; border-radius: 9px;
+  border: 1px solid var(--bordure); background: var(--bg-carte); color: var(--texte);
+  font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.niv-btn:disabled { opacity: 0.3; }
+
 /* Métronome */
 #metro { text-align: center; }
 #metro .bpm-affiche { font-size: 64px; font-weight: 800; margin: 8px 0 0; letter-spacing: -2px; }
