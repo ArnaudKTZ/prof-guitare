@@ -7,6 +7,9 @@ const LS = {
 
 const todayKey = () => new Date().toISOString().slice(0, 10); // AAAA-MM-JJ
 
+// Extrait un tempo numérique d'un texte ("50-60 bpm" -> 50, "tempo du disque" -> 60 par défaut).
+const tempoNum = (txt) => { const m = String(txt).match(/\d+/); return m ? parseInt(m[0], 10) : 60; };
+
 // ---------- Bande son (notes synthétisées depuis les cases des tabs) ----------
 // Format note : {s:corde(6=mi grave..1=mi aigu), f:case, d:durée en temps, bend:case cible,
 //   r:silence, c:[[s,f]...] accord}. Séquences définies dans data.js (niveaux + AUDIO_ETAPE).
@@ -116,7 +119,10 @@ function renderRoutine() {
         <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${n.tempoDepart} ${n.unite}</span></span></div>
         <div class="info-ligne"><span class="k">Focus</span><span class="v">${n.focus}</span></div>
         <div class="info-ligne"><span class="k">Palier</span><span class="v">${n.palier}</span></div>
-        ${n.audio ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter le niveau</button>` : ''}
+        <div class="actions-exo">
+          ${n.audio ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter</button>` : ''}
+          <button class="btn metro-exo" data-metro="${n.tempoDepart}">🥁 Métro ${n.tempoDepart}</button>
+        </div>
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-bloc="${b.id}">
           ${fait ? 'Annuler' : 'Bloc fait ✓'}
         </button>
@@ -139,6 +145,9 @@ function renderRoutine() {
       const lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), b.niveaux.length - 1));
       AudioPlayer.toggle(b.niveaux[lvl].audio, btn);
     });
+  });
+  el.querySelectorAll('button[data-metro]').forEach(btn => {
+    btn.addEventListener('click', () => Metro.startAt(parseInt(btn.dataset.metro, 10)));
   });
 }
 
@@ -201,7 +210,10 @@ function renderMorceau() {
         <div class="label">Tablature</div>
         <pre class="tab">${e.tab.join('\n')}</pre>
         <p class="astuce"><strong>Validée quand :</strong> ${e.valideQuand}</p>
-        ${AUDIO_ETAPE[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter l'étape</button>` : ''}
+        <div class="actions-exo">
+          ${AUDIO_ETAPE[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter</button>` : ''}
+          <button class="btn metro-exo" data-metro="${tempoNum(e.tempo)}">🥁 Métro ${tempoNum(e.tempo)}</button>
+        </div>
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-etape="${e.id}">
           ${fait ? 'Annuler la validation' : 'Valider cette étape ✓'}
         </button>
@@ -214,6 +226,9 @@ function renderMorceau() {
   });
   el.querySelectorAll('button[data-audio-etape]').forEach(btn => {
     btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO_ETAPE[btn.dataset.audioEtape], btn));
+  });
+  el.querySelectorAll('button[data-metro]').forEach(btn => {
+    btn.addEventListener('click', () => Metro.startAt(parseInt(btn.dataset.metro, 10)));
   });
 }
 
@@ -244,8 +259,9 @@ const Metro = (() => {
   function tick() {
     const accent = (beat % battues) === 0;
     clic(accent);
-    const pulse = document.querySelector('.pulse');
-    if (pulse) { pulse.classList.add('bat'); setTimeout(() => pulse.classList.remove('bat'), 70); }
+    document.querySelectorAll('.pulse, .pulse-mini').forEach(p => {
+      p.classList.add('bat'); setTimeout(() => p.classList.remove('bat'), 70);
+    });
     beat++;
   }
 
@@ -264,6 +280,7 @@ const Metro = (() => {
     if (running) { clearInterval(timer); timer = setInterval(tick, 60000 / bpm); }
     maj();
   }
+  function startAt(v) { setBpm(v); if (!running) start(); }
   function maj() {
     const a = document.querySelector('#metro .bpm-affiche');
     const r = document.querySelector('#metro input[type=range]');
@@ -271,8 +288,13 @@ const Metro = (() => {
     if (a) a.textContent = bpm;
     if (r) r.value = bpm;
     if (p) { p.textContent = running ? 'Stop' : 'Démarrer'; p.className = 'btn ' + (running ? 'stop' : 'play'); }
+    // barre permanente
+    const mb = document.getElementById('mini-bpm');
+    const mp = document.getElementById('mini-play');
+    if (mb) mb.textContent = bpm;
+    if (mp) { mp.textContent = running ? '⏸' : '▶'; mp.classList.toggle('on', running); }
   }
-  return { start, stop, setBpm, get bpm() { return bpm; }, get running() { return running; },
+  return { start, stop, setBpm, startAt, get bpm() { return bpm; }, get running() { return running; },
            toggle() { running ? stop() : start(); } };
 })();
 
@@ -307,10 +329,16 @@ function renderMetro() {
     b.addEventListener('click', () => Metro.setBpm(parseInt(b.dataset.bpm, 10))));
 }
 
+// ---------- Barre métronome permanente ----------
+document.getElementById('mini-play').addEventListener('click', () => Metro.toggle());
+document.getElementById('mini-moins').addEventListener('click', () => Metro.setBpm(Metro.bpm - 5));
+document.getElementById('mini-plus').addEventListener('click', () => Metro.setBpm(Metro.bpm + 5));
+
 // ---------- Init ----------
 renderRoutine();
 renderMorceau();
 renderMetro();
+document.getElementById('mini-bpm').textContent = Metro.bpm;
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
