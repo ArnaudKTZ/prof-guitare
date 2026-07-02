@@ -7,49 +7,9 @@ const LS = {
 
 const todayKey = () => new Date().toISOString().slice(0, 10); // AAAA-MM-JJ
 
-// ---------- Bandes son (notes synthétisées depuis les cases des tabs) ----------
-// Format note : {s:corde(6=mi grave..1=mi aigu), f:case, d:durée en temps, bend:case cible, r:silence, c:[[s,f]...] accord}
-const AUDIO = {
-  bloc: {
-    echauffement: { bpm: 80, notes: [
-      {s:4,f:5},{s:4,f:6},{s:4,f:7},{s:4,f:8},{s:3,f:5},{s:3,f:6},{s:3,f:7},{s:3,f:8},
-      {s:2,f:5},{s:2,f:6},{s:2,f:7},{s:2,f:8},{s:1,f:5},{s:1,f:6},{s:1,f:7},{s:1,f:8}
-    ]},
-    picking: { bpm: 80, notes: [
-      {s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0}
-    ]},
-    pentatonique: { bpm: 80, notes: [
-      {s:6,f:10},{s:6,f:13},{s:5,f:10},{s:5,f:12},{s:4,f:10},{s:4,f:12},
-      {s:3,f:10},{s:3,f:12},{s:2,f:10},{s:2,f:13},{s:1,f:10},{s:1,f:13},
-      {s:1,f:10},{s:2,f:13},{s:2,f:10},{s:3,f:12},{s:3,f:10},{s:4,f:12},
-      {s:4,f:10},{s:5,f:12},{s:5,f:10},{s:6,f:13},{s:6,f:10}
-    ]},
-    bends: { bpm: 60, notes: [
-      {s:3,f:14,d:1},{r:true,d:0.5},{s:3,f:12,bend:14,d:2}
-    ]},
-    morceau: { bpm: 60, notes: [
-      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
-    ]}
-  },
-  etape: {
-    1: { bpm: 55, notes: [{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1}] },
-    2: { bpm: 60, notes: [
-      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
-    ]},
-    3: { bpm: 60, notes: [
-      {c:[[4,0],[3,2],[2,3],[1,1]],d:2}, {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2},
-      {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2}, {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
-    ]},
-    4: { bpm: 60, notes: [
-      {s:2,f:13,bend:15,d:1},{s:2,f:13,d:0.5},{s:2,f:10,d:0.5},{s:3,f:12,bend:14,d:2}
-    ]},
-    5: { bpm: 60, notes: [
-      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:0.5},
-      {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
-    ]}
-  }
-};
-
+// ---------- Bande son (notes synthétisées depuis les cases des tabs) ----------
+// Format note : {s:corde(6=mi grave..1=mi aigu), f:case, d:durée en temps, bend:case cible,
+//   r:silence, c:[[s,f]...] accord}. Séquences définies dans data.js (niveaux + AUDIO_ETAPE).
 const AudioPlayer = (() => {
   const OPEN = { 6: 40, 5: 45, 4: 50, 3: 55, 2: 59, 1: 64 }; // MIDI cordes à vide
   let ctx = null, nodes = [], timer = null, current = null;
@@ -133,6 +93,15 @@ function renderRoutine() {
   ROUTINE.blocs.forEach(b => {
     const fait = faits.includes(b.id);
     const strat = b.guitare.toUpperCase().includes('STRAT');
+    const nb = b.niveaux.length;
+    let lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), nb - 1));
+    const n = b.niveaux[lvl];
+    const navNiv = nb > 1 ? `
+        <div class="niveau-nav">
+          <button class="niv-btn" data-niv-prev="${b.id}" ${lvl === 0 ? 'disabled' : ''}>◀</button>
+          <span class="niv-label">Niveau ${lvl + 1}/${nb} · ${n.nom}</span>
+          <button class="niv-btn" data-niv-next="${b.id}" ${lvl === nb - 1 ? 'disabled' : ''}>▶</button>
+        </div>` : `<div class="niveau-nav"><span class="niv-label">${n.nom}</span></div>`;
     html += `
       <div class="carte">
         <h3>${b.titre} ${fait ? '✅' : ''}</h3>
@@ -140,13 +109,14 @@ function renderRoutine() {
           <span class="pill duree">${b.duree}</span>
           <span class="pill ${strat ? 'strat' : 'duree'}">${b.guitare}</span>
         </div>
-        <p class="but">${b.but}</p>
+        ${navNiv}
+        <p class="but">${n.but}</p>
         <div class="label">Tablature</div>
-        <pre class="tab">${b.tab.join('\n')}</pre>
-        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${b.tempoDepart} ${b.unite}</span></span></div>
-        <div class="info-ligne"><span class="k">Focus</span><span class="v">${b.focus}</span></div>
-        <div class="info-ligne"><span class="k">Palier</span><span class="v">${b.palier}</span></div>
-        ${AUDIO.bloc[b.id] ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter l'exo</button>` : ''}
+        <pre class="tab">${n.tab.join('\n')}</pre>
+        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${n.tempoDepart} ${n.unite}</span></span></div>
+        <div class="info-ligne"><span class="k">Focus</span><span class="v">${n.focus}</span></div>
+        <div class="info-ligne"><span class="k">Palier</span><span class="v">${n.palier}</span></div>
+        ${n.audio ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter le niveau</button>` : ''}
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-bloc="${b.id}">
           ${fait ? 'Annuler' : 'Bloc fait ✓'}
         </button>
@@ -157,9 +127,26 @@ function renderRoutine() {
   el.querySelectorAll('button[data-bloc]').forEach(btn => {
     btn.addEventListener('click', () => toggleBloc(btn.dataset.bloc));
   });
-  el.querySelectorAll('button[data-audio-bloc]').forEach(btn => {
-    btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO.bloc[btn.dataset.audioBloc], btn));
+  el.querySelectorAll('button[data-niv-prev]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveau(btn.dataset.nivPrev, -1));
   });
+  el.querySelectorAll('button[data-niv-next]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveau(btn.dataset.nivNext, 1));
+  });
+  el.querySelectorAll('button[data-audio-bloc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const b = ROUTINE.blocs.find(x => x.id === btn.dataset.audioBloc);
+      const lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), b.niveaux.length - 1));
+      AudioPlayer.toggle(b.niveaux[lvl].audio, btn);
+    });
+  });
+}
+
+function changerNiveau(id, delta) {
+  const b = ROUTINE.blocs.find(x => x.id === id);
+  const lvl = Math.max(0, Math.min(LS.get('niveau-' + id, 0) + delta, b.niveaux.length - 1));
+  LS.set('niveau-' + id, lvl);
+  renderRoutine();
 }
 
 function toggleBloc(id) {
@@ -214,7 +201,7 @@ function renderMorceau() {
         <div class="label">Tablature</div>
         <pre class="tab">${e.tab.join('\n')}</pre>
         <p class="astuce"><strong>Validée quand :</strong> ${e.valideQuand}</p>
-        ${AUDIO.etape[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter l'étape</button>` : ''}
+        ${AUDIO_ETAPE[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter l'étape</button>` : ''}
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-etape="${e.id}">
           ${fait ? 'Annuler la validation' : 'Valider cette étape ✓'}
         </button>
@@ -226,7 +213,7 @@ function renderMorceau() {
     btn.addEventListener('click', () => toggleEtape(parseInt(btn.dataset.etape, 10)));
   });
   el.querySelectorAll('button[data-audio-etape]').forEach(btn => {
-    btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO.etape[btn.dataset.audioEtape], btn));
+    btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO_ETAPE[btn.dataset.audioEtape], btn));
   });
 }
 
