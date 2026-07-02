@@ -42,6 +42,14 @@
   plus longues. Nouveau bloc SHUFFLE blues (feel ternaire → riff boogie → grille 12 mesures) pour enfin
   exploiter l'atout batteur. 6 blocs au total. Audio par niveau.
 - Prochain réglage possible : ajouter des niveaux 4-5 sur les blocs où il plafonne, selon son retour.
+- Métronome permanent : barre fixe en bas visible sur tous les onglets (play/stop, tempo ±5), + bouton
+  "Métro {tempo}" sur chaque exo/étape qui lance le clic au bon tempo sans quitter la tablature. Réglait
+  le pb : avant, aller sur l'onglet Métro cachait la séquence à jouer.
+- Mode parcours (choix d'Arnaud : déblocage strict, mode jeu) : chaque étape du morceau a des prérequis
+  (blocs de routine) et se verrouille tant qu'ils ne sont pas faits + étape précédente validée. Étape
+  finale = les 6 blocs. Exos faits mémorisés durablement (localStorage 'routine-acquis', distinct du
+  'routine-faits-<date>' quotidien). Chaque étape a aussi une échelle de tempo (lent → à tempo).
+  Si le strict le gêne à l'usage, repli prévu vers un guidage souple (non bloquant).
 
 ### Mise en ligne (GitHub Pages)
 - Repo GitHub public créé : https://github.com/ArnaudKTZ/prof-guitare (compte ArnaudKTZ).
