@@ -1,0 +1,142 @@
+:root {
+  --bg: #1a1a1f;
+  --bg-carte: #26262e;
+  --bg-carte-2: #2f2f39;
+  --texte: #ececf0;
+  --texte-doux: #a0a0ad;
+  --accent: #e0a458;      /* ambré, esprit blues/bois */
+  --accent-2: #d4623a;    /* orange chaud */
+  --ok: #58c07a;
+  --bordure: #3a3a45;
+  --strat: #6ea8d8;       /* rappel "Strat" */
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--texte);
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  padding: calc(env(safe-area-inset-top) + 16px) 20px 10px;
+  text-align: center;
+}
+header h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
+header p { margin: 2px 0 0; color: var(--texte-doux); font-size: 13px; text-transform: capitalize; }
+
+nav#tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px 12px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+nav#tabs button {
+  flex: 1;
+  padding: 11px 6px;
+  border: 1px solid var(--bordure);
+  background: var(--bg-carte);
+  color: var(--texte-doux);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+nav#tabs button.actif { background: var(--accent); color: #1a1a1f; border-color: var(--accent); }
+
+main { padding: 4px 14px 40px; }
+.vue { display: none; }
+.vue.actif { display: block; }
+
+.carte {
+  background: var(--bg-carte);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.carte h3 { margin: 0 0 6px; font-size: 16px; }
+.meta { color: var(--texte-doux); font-size: 12px; margin-bottom: 10px; }
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px; margin-right: 6px;
+}
+.pill.duree { background: var(--bg-carte-2); color: var(--texte-doux); }
+.pill.strat { background: rgba(110,168,216,0.18); color: var(--strat); }
+
+.but { font-size: 14px; line-height: 1.45; margin: 4px 0 10px; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-doux); margin: 12px 0 4px; }
+
+pre.tab {
+  background: #14141a;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: "SF Mono", ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--accent);
+  margin: 0;
+}
+.info-ligne { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; margin-top: 10px; }
+.info-ligne .k { color: var(--texte-doux); }
+.info-ligne .v { text-align: right; }
+.tempo-badge {
+  display: inline-block; background: var(--accent-2); color: #fff;
+  font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 13px;
+}
+
+/* Progression morceau */
+.barre { height: 12px; background: var(--bg-carte-2); border-radius: 20px; overflow: hidden; margin: 8px 0 4px; }
+.barre > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .4s ease; }
+.pct { text-align: right; font-size: 13px; color: var(--accent); font-weight: 700; }
+
+.etape { border-left: 3px solid var(--bordure); padding-left: 12px; margin-bottom: 6px; }
+.etape.faite { border-left-color: var(--ok); }
+.etape .tete { display: flex; align-items: center; gap: 8px; }
+.etape .num {
+  width: 24px; height: 24px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  background: var(--bg-carte-2); color: var(--texte-doux);
+}
+.etape.faite .num { background: var(--ok); color: #14141a; }
+.etape h4 { margin: 0; font-size: 15px; flex: 1; }
+
+.btn {
+  width: 100%; padding: 12px; border-radius: 12px; border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px;
+}
+.btn.valider { background: var(--ok); color: #10231a; }
+.btn.annuler { background: var(--bg-carte-2); color: var(--texte-doux); }
+.btn.ghost { background: transparent; border: 1px solid var(--bordure); color: var(--texte-doux); }
+
+/* Métronome */
+#metro { text-align: center; }
+#metro .bpm-affiche { font-size: 64px; font-weight: 800; margin: 8px 0 0; letter-spacing: -2px; }
+#metro .bpm-unit { color: var(--texte-doux); font-size: 14px; margin-bottom: 12px; }
+.bpm-ctrl { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 8px 0 16px; }
+.bpm-ctrl button {
+  width: 56px; height: 56px; border-radius: 50%; font-size: 26px; font-weight: 700;
+  border: 1px solid var(--bordure); background: var(--bg-carte); color: var(--texte);
+}
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.pulse {
+  width: 90px; height: 90px; border-radius: 50%; margin: 18px auto;
+  background: var(--bg-carte); border: 2px solid var(--bordure); transition: transform .05s, background .05s;
+}
+.pulse.bat { background: var(--accent); transform: scale(1.12); }
+.btn.play { background: var(--accent); color: #1a1a1f; }
+.btn.stop { background: var(--accent-2); color: #fff; }
+.presets { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.presets button { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--bordure); background: var(--bg-carte); color: var(--texte-doux); font-size: 13px; }
+
+.astuce { font-size: 12px; color: var(--texte-doux); line-height: 1.5; margin-top: 6px; }
+.streak { text-align: center; font-size: 13px; color: var(--accent); margin: 2px 0 10px; font-weight: 600; }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Prof de guitare</title>
+  <meta name="theme-color" content="#1a1a1f" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Guitare" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Prof de guitare</h1>
+    <p id="date-jour"></p>
+  </header>
+
+  <nav id="tabs">
+    <button data-vue="aujourdhui" class="actif">Aujourd'hui</button>
+    <button data-vue="morceau">Morceau</button>
+    <button data-vue="metronome">Métro</button>
+  </nav>
+
+  <main>
+    <section id="vue-aujourdhui" class="vue actif"></section>
+    <section id="vue-morceau" class="vue"></section>
+    <section id="vue-metronome" class="vue"></section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

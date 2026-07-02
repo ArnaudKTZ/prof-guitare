@@ -4,6 +4,39 @@
 
 ---
 
+## 2026-07-02 (après-midi) — Phase 0 : évaluation
+
+### Bilan de niveau (questionnaire)
+- Profil : **lead player orienté riffs/pentatonique**, pas gratteur d'accords.
+- Atouts : pentatonique mineure sur plusieurs positions, sens du tempo (batteur).
+- Chantiers priorisés : (1) coordination mains/métronome, (2) justesse des bends, (3) vibrato (inexistant),
+  (4) alternate picking non chiffré, (5) accords/changements (temps mort net, secondaire).
+
+### Décisions calées
+- **Pratique :** 15-20 min/jour, quotidien. Routine compacte, tout au métronome.
+- **Guitare quotidienne :** électro-acoustique. Morceau + bends/vibrato sur la Strat.
+- **Morceau n°1 :** ZZ Top — I Need You Tonight (slow blues, *Eliminator* 1983). Choisi par Arnaud,
+  validé : tempo lent idéal pour installer coordination + bends justes, grille de blues carrée parfaite
+  pour roder le moteur chanson. Ne pas viser le photocopiage du solo improvisé de Gibbons ; découpage
+  prévu : riff/intro → thème → grille d'accompagnement → chorus de solo simplifié → groove complet.
+
+### Suite
+- Phase 1 : MVP PWA (routine du jour + I Need You Tonight décomposé + validation des steps + métronome).
+
+### Phase 1 réalisée dans la foulée (MVP PWA)
+- Contenu écrit à la main : `content/routine-quotidienne.md` (routine 5 blocs chiffrée) et
+  `content/morceaux/i-need-you-tonight.md` (5 étapes validables). Tonalité alignée : ré mineur.
+- PWA construite dans `app/` : `index.html`, `style.css`, `app.js`, `data.js` (contenu embarqué),
+  `manifest.webmanifest`, `sw.js` (offline cache-first), `icon.svg`.
+- 3 vues : Aujourd'hui (routine + validation blocs + streak), Morceau (5 étapes + barre de progression),
+  Métro (Web Audio, accent tous les 4 temps, presets 50-110). Progression en localStorage.
+- Serveur de dev : `node app/server.js` (port 8123), config preview dans `.claude/launch.json`.
+  Note : python http.server bloqué par le sandbox, d'où le mini serveur Node.
+- Vérifié visuellement dans le preview : les 3 vues et la validation fonctionnent.
+- Reste à faire : tester l'install PWA réelle sur iPhone (hébergement https), icône PNG dédiée si besoin.
+
+---
+
 ## 2026-07-02
 
 ### Création du projet
