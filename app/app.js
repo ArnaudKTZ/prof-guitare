@@ -161,10 +161,17 @@ function changerNiveau(id, delta) {
 function toggleBloc(id) {
   const k = 'routine-faits-' + todayKey();
   let faits = LS.get(k, []);
-  faits = faits.includes(id) ? faits.filter(x => x !== id) : [...faits, id];
+  const ajout = !faits.includes(id);
+  faits = ajout ? [...faits, id] : faits.filter(x => x !== id);
   LS.set(k, faits);
+  if (ajout) {
+    // acquis persistant (débloque les étapes du morceau, ne se perd jamais)
+    const acquis = LS.get('routine-acquis', []);
+    if (!acquis.includes(id)) LS.set('routine-acquis', [...acquis, id]);
+  }
   if (faits.length === ROUTINE.blocs.length) majStreak();
   renderRoutine();
+  renderMorceau(); // le déblocage du morceau peut avoir changé
 }
 
 function majStreak() {
@@ -193,10 +200,41 @@ function renderMorceau() {
       <div class="barre"><span style="width:${pct}%"></span></div>
       <div class="pct">${pct}%</div>
       <p class="astuce">${MORCEAU.note}</p>
+      <p class="astuce">🎮 Mode parcours : chaque étape se débloque quand tu as fait les exos qui la préparent (dans l'onglet Aujourd'hui) et validé l'étape précédente. Faire tous les exos = pouvoir jouer le morceau en entier.</p>
     </div>`;
 
-  MORCEAU.etapes.forEach(e => {
+  const acquis = LS.get('routine-acquis', []);
+  const blocName = id => (ROUTINE.blocs.find(b => b.id === id) || {}).titre || id;
+
+  MORCEAU.etapes.forEach((e, idx) => {
     const fait = valides.includes(e.id);
+    const prevOk = e.id === 1 || valides.includes(MORCEAU.etapes[idx - 1].id);
+    const missing = (e.prereqs || []).filter(p => !acquis.includes(p));
+    const unlocked = prevOk && missing.length === 0;
+
+    if (!unlocked && !fait) {
+      html += `
+        <div class="carte verrouille">
+          <div class="etape"><div class="tete"><div class="num">🔒</div><h4>${e.titre}</h4></div></div>
+          <div class="lock-panel">
+            <p class="lock-titre">Étape verrouillée</p>
+            ${!prevOk ? `<p class="lock-item">→ Valide d'abord l'étape ${e.id - 1}.</p>` : ''}
+            ${missing.length ? `<p class="lock-item">→ Fais ces exos (au moins une fois) dans l'onglet Aujourd'hui :</p>
+              <ul class="lock-list">${missing.map(m => `<li>${blocName(m)}</li>`).join('')}</ul>` : ''}
+          </div>
+        </div>`;
+      return;
+    }
+
+    const nb = (e.niveaux || []).length;
+    let lvl = Math.max(0, Math.min(LS.get('niveau-etape-' + e.id, 0), nb - 1));
+    const cur = nb ? e.niveaux[lvl] : { nom: e.tempo, tempo: tempoNum(e.tempo) };
+    const navTempo = nb > 1 ? `
+        <div class="niveau-nav">
+          <button class="niv-btn" data-tniv-prev="${e.id}" ${lvl === 0 ? 'disabled' : ''}>◀</button>
+          <span class="niv-label">Tempo : ${cur.nom} · ${cur.tempo} bpm</span>
+          <button class="niv-btn" data-tniv-next="${e.id}" ${lvl === nb - 1 ? 'disabled' : ''}>▶</button>
+        </div>` : '';
     html += `
       <div class="carte">
         <div class="etape ${fait ? 'faite' : ''}">
@@ -205,14 +243,14 @@ function renderMorceau() {
             <h4>${e.titre}</h4>
           </div>
         </div>
-        <div class="info-ligne"><span class="k">Tempo</span><span class="v"><span class="tempo-badge">${e.tempo}</span></span></div>
+        ${navTempo}
         <p class="but">${e.description}</p>
         <div class="label">Tablature</div>
         <pre class="tab">${e.tab.join('\n')}</pre>
         <p class="astuce"><strong>Validée quand :</strong> ${e.valideQuand}</p>
         <div class="actions-exo">
           ${AUDIO_ETAPE[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter</button>` : ''}
-          <button class="btn metro-exo" data-metro="${tempoNum(e.tempo)}">🥁 Métro ${tempoNum(e.tempo)}</button>
+          <button class="btn metro-exo" data-metro="${cur.tempo}">🥁 Métro ${cur.tempo}</button>
         </div>
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-etape="${e.id}">
           ${fait ? 'Annuler la validation' : 'Valider cette étape ✓'}
@@ -230,6 +268,19 @@ function renderMorceau() {
   el.querySelectorAll('button[data-metro]').forEach(btn => {
     btn.addEventListener('click', () => Metro.startAt(parseInt(btn.dataset.metro, 10)));
   });
+  el.querySelectorAll('button[data-tniv-prev]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveauEtape(parseInt(btn.dataset.tnivPrev, 10), -1));
+  });
+  el.querySelectorAll('button[data-tniv-next]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveauEtape(parseInt(btn.dataset.tnivNext, 10), 1));
+  });
+}
+
+function changerNiveauEtape(id, delta) {
+  const e = MORCEAU.etapes.find(x => x.id === id);
+  const lvl = Math.max(0, Math.min(LS.get('niveau-etape-' + id, 0) + delta, e.niveaux.length - 1));
+  LS.set('niveau-etape-' + id, lvl);
+  renderMorceau();
 }
 
 function toggleEtape(id) {

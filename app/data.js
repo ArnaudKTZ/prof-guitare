@@ -388,7 +388,9 @@ const MORCEAU = {
       tempo: "50-60 bpm",
       description: "Avant les notes, le placement. Joue juste la fondamentale ré en noires, pile sur le clic, en boucle. Objectif : scotché au tempo, comme au drum.",
       tab: ["E|--10--10--10--10--|"],
-      valideQuand: "12 mesures d'affilée parfaitement en place, sans accélérer."
+      valideQuand: "12 mesures d'affilée parfaitement en place, sans accélérer.",
+      prereqs: ["echauffement", "shuffle"],
+      niveaux: [{ nom: "Très lent", tempo: 45 }, { nom: "En place", tempo: 55 }, { nom: "À tempo", tempo: 65 }]
     },
     {
       id: 2,
@@ -400,7 +402,9 @@ const MORCEAU = {
         "G|--12b----12--10----------|",
         "D|--------------12--10-----|"
       ],
-      valideQuand: "Motif propre et en place à 60 bpm, bend juste."
+      valideQuand: "Motif propre et en place à 60 bpm, bend juste.",
+      prereqs: ["pentatonique", "bends"],
+      niveaux: [{ nom: "Découverte", tempo: 45 }, { nom: "Propre", tempo: 60 }, { nom: "À tempo", tempo: 75 }]
     },
     {
       id: 3,
@@ -411,7 +415,9 @@ const MORCEAU = {
         "Dm        G         C",
         "xx0231    320003    x32010"
       ],
-      valideQuand: "Tu poses les 3 accords proprement et tu changes sans casser le tempo lent."
+      valideQuand: "Tu poses les 3 accords proprement et tu changes sans casser le tempo lent.",
+      prereqs: ["shuffle", "echauffement"],
+      niveaux: [{ nom: "Pose des accords", tempo: 50 }, { nom: "Enchaîné", tempo: 60 }, { nom: "À tempo", tempo: 70 }]
     },
     {
       id: 4,
@@ -423,7 +429,9 @@ const MORCEAU = {
         "B|--13b~~~----13--10-------------|",
         "G|-----------------12b~~~--------|"
       ],
-      valideQuand: "Un chorus de 12 mesures en place, bends justes et au moins un vibrato tenu."
+      valideQuand: "Un chorus de 12 mesures en place, bends justes et au moins un vibrato tenu.",
+      prereqs: ["pentatonique", "bends"],
+      niveaux: [{ nom: "Notes lentes", tempo: 45 }, { nom: "Avec bends", tempo: 60 }, { nom: "À tempo", tempo: 70 }]
     },
     {
       id: 5,
@@ -431,7 +439,9 @@ const MORCEAU = {
       tempo: "tempo du disque",
       description: "Enchainer intro → grille → un chorus de solo → sortie, en place, au tempo lent, sur toute une boucle. C'est le 100%.",
       tab: ["Enchainement complet, une boucle entière sans t'arrêter."],
-      valideQuand: "Un tour complet convaincant et en place, sans t'arrêter."
+      valideQuand: "Un tour complet convaincant et en place, sans t'arrêter.",
+      prereqs: ["echauffement", "picking", "pentatonique", "bends", "shuffle", "morceau"],
+      niveaux: [{ nom: "Au ralenti", tempo: 50 }, { nom: "Sans s'arrêter", tempo: 60 }, { nom: "Tempo disque", tempo: 70 }]
     }
   ]
 };
