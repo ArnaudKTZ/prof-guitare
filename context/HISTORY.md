@@ -34,6 +34,15 @@
   Note : python http.server bloqué par le sandbox, d'où le mini serveur Node.
 - Vérifié visuellement dans le preview : les 3 vues et la validation fonctionnent.
 
+### Itérations post-MVP (même jour)
+- Bande son par exo : bouton « Écouter » qui joue les notes de la tab en Web Audio (synthé, hauteur +
+  rythme, bends en glissando, accords en arpège). Service worker passé en network-first (cache v2).
+- Retour d'Arnaud : routine de départ trop simple. → Routine v2 : chaque bloc devient une échelle de
+  NIVEAUX (paliers, navigation ◀▶, niveau mémorisé en localStorage). 3-4 niveaux par bloc, séquences
+  plus longues. Nouveau bloc SHUFFLE blues (feel ternaire → riff boogie → grille 12 mesures) pour enfin
+  exploiter l'atout batteur. 6 blocs au total. Audio par niveau.
+- Prochain réglage possible : ajouter des niveaux 4-5 sur les blocs où il plafonne, selon son retour.
+
 ### Mise en ligne (GitHub Pages)
 - Repo GitHub public créé : https://github.com/ArnaudKTZ/prof-guitare (compte ArnaudKTZ).
 - URL de l'appli : **https://arnaudktz.github.io/prof-guitare/** (https, installable iPhone).
