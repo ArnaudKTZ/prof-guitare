@@ -33,7 +33,18 @@
 - Serveur de dev : `node app/server.js` (port 8123), config preview dans `.claude/launch.json`.
   Note : python http.server bloqué par le sandbox, d'où le mini serveur Node.
 - Vérifié visuellement dans le preview : les 3 vues et la validation fonctionnent.
-- Reste à faire : tester l'install PWA réelle sur iPhone (hébergement https), icône PNG dédiée si besoin.
+
+### Mise en ligne (GitHub Pages)
+- Repo GitHub public créé : https://github.com/ArnaudKTZ/prof-guitare (compte ArnaudKTZ).
+- URL de l'appli : **https://arnaudktz.github.io/prof-guitare/** (https, installable iPhone).
+- Méthode de déploiement : **branche `gh-pages`** servie à la racine par Pages (build classique).
+  La branche est alimentée depuis le sous-dossier `app/` de `main` via :
+  `git subtree push --prefix app origin gh-pages`.
+  Donc pour publier une mise à jour : commit sur main, puis rejouer ce subtree push.
+- Écarté : le déploiement par GitHub Actions (workflow supprimé) car `actions/deploy-pages`
+  restait en timeout (blocage au provisioning du 1er site Pages du compte). La méthode branche est
+  plus fiable. `docs/` n'a pas pu servir (déjà pris par PLAN.md).
+- Premier build Pages long (provisioning initial du sous-domaine github.io, 10-20 min).
 
 ---
 

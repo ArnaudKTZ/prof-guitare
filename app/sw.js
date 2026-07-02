@@ -1,5 +1,5 @@
 // Service worker minimal : cache-first pour un usage hors-ligne.
-const CACHE = 'guitare-v1';
+const CACHE = 'guitare-v2';
 const ASSETS = [
   'index.html',
   'style.css',
@@ -20,13 +20,15 @@ self.addEventListener('activate', e => {
   );
 });
 
+// Network-first : toujours la dernière version quand on est en ligne,
+// le cache ne sert qu'en secours (hors-ligne).
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+    fetch(e.request).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
       return res;
-    }).catch(() => caches.match('index.html')))
+    }).catch(() => caches.match(e.request).then(hit => hit || caches.match('index.html')))
   );
 });

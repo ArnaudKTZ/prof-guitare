@@ -117,6 +117,8 @@ pre.tab {
 .btn.valider { background: var(--ok); color: #10231a; }
 .btn.annuler { background: var(--bg-carte-2); color: var(--texte-doux); }
 .btn.ghost { background: transparent; border: 1px solid var(--bordure); color: var(--texte-doux); }
+.btn.ecouter { background: var(--bg-carte-2); color: var(--accent); border: 1px solid var(--accent); }
+.btn.ecouter.joue { background: var(--accent); color: #1a1a1f; border-color: var(--accent); }
 
 /* Métronome */
 #metro { text-align: center; }

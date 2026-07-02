@@ -10,7 +10,7 @@
 
 ## À venir
 
-- [ ] Héberger la PWA (https) et tester l'installation réelle sur l'iPhone (écran d'accueil, offline).
+- [ ] Tester l'installation PWA sur l'iPhone (Safari → Partager → écran d'accueil, offline).
 
 ## Sans date ferme
 
@@ -25,3 +25,5 @@
       travail (électro-acoustique, morceau sur Strat) et morceau n°1 (ZZ Top — I Need You Tonight).
 - [x] 2026-07-02 — Phase 1 : contenu (routine + morceau décomposé) et MVP PWA construit dans app/
       (routine, morceau, métronome, progression localStorage), vérifié dans le preview.
+- [x] 2026-07-02 — Mise en ligne sur GitHub Pages : https://arnaudktz.github.io/prof-guitare/ (HTTP 200).
+      Retardée par un incident GitHub Pages, résolu le soir même, build OK.

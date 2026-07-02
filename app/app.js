@@ -7,6 +7,94 @@ const LS = {
 
 const todayKey = () => new Date().toISOString().slice(0, 10); // AAAA-MM-JJ
 
+// ---------- Bandes son (notes synthétisées depuis les cases des tabs) ----------
+// Format note : {s:corde(6=mi grave..1=mi aigu), f:case, d:durée en temps, bend:case cible, r:silence, c:[[s,f]...] accord}
+const AUDIO = {
+  bloc: {
+    echauffement: { bpm: 80, notes: [
+      {s:4,f:5},{s:4,f:6},{s:4,f:7},{s:4,f:8},{s:3,f:5},{s:3,f:6},{s:3,f:7},{s:3,f:8},
+      {s:2,f:5},{s:2,f:6},{s:2,f:7},{s:2,f:8},{s:1,f:5},{s:1,f:6},{s:1,f:7},{s:1,f:8}
+    ]},
+    picking: { bpm: 80, notes: [
+      {s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0},{s:4,f:0}
+    ]},
+    pentatonique: { bpm: 80, notes: [
+      {s:6,f:10},{s:6,f:13},{s:5,f:10},{s:5,f:12},{s:4,f:10},{s:4,f:12},
+      {s:3,f:10},{s:3,f:12},{s:2,f:10},{s:2,f:13},{s:1,f:10},{s:1,f:13},
+      {s:1,f:10},{s:2,f:13},{s:2,f:10},{s:3,f:12},{s:3,f:10},{s:4,f:12},
+      {s:4,f:10},{s:5,f:12},{s:5,f:10},{s:6,f:13},{s:6,f:10}
+    ]},
+    bends: { bpm: 60, notes: [
+      {s:3,f:14,d:1},{r:true,d:0.5},{s:3,f:12,bend:14,d:2}
+    ]},
+    morceau: { bpm: 60, notes: [
+      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
+    ]}
+  },
+  etape: {
+    1: { bpm: 55, notes: [{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1}] },
+    2: { bpm: 60, notes: [
+      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
+    ]},
+    3: { bpm: 60, notes: [
+      {c:[[4,0],[3,2],[2,3],[1,1]],d:2}, {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2},
+      {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2}, {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
+    ]},
+    4: { bpm: 60, notes: [
+      {s:2,f:13,bend:15,d:1},{s:2,f:13,d:0.5},{s:2,f:10,d:0.5},{s:3,f:12,bend:14,d:2}
+    ]},
+    5: { bpm: 60, notes: [
+      {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:0.5},
+      {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
+    ]}
+  }
+};
+
+const AudioPlayer = (() => {
+  const OPEN = { 6: 40, 5: 45, 4: 50, 3: 55, 2: 59, 1: 64 }; // MIDI cordes à vide
+  let ctx = null, nodes = [], timer = null, current = null;
+  const freq = (s, f) => 440 * Math.pow(2, ((OPEN[s] + f) - 69) / 12);
+
+  function pluck(f0, f1, start, dur) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(f0, start);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, start + dur * 0.5);
+    g.gain.setValueAtTime(0.0001, start);
+    g.gain.exponentialRampToValueAtTime(0.26, start + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + dur + 0.25);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(start); o.stop(start + dur + 0.3);
+    nodes.push(o);
+  }
+
+  function stop() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    nodes.forEach(n => { try { n.stop(); } catch (e) {} });
+    nodes = [];
+    if (current) { current.classList.remove('joue'); current.textContent = current.dataset.label; current = null; }
+  }
+
+  function play(seq, btn) {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    stop();
+    current = btn; btn.dataset.label = btn.textContent; btn.textContent = '⏸ Stop'; btn.classList.add('joue');
+    const beat = 60 / (seq.bpm || 70);
+    let t = ctx.currentTime + 0.06;
+    seq.notes.forEach(n => {
+      const d = (n.d || 0.5) * beat;
+      if (n.r) { t += d; return; }
+      if (n.c) { n.c.forEach((p, i) => pluck(freq(p[0], p[1]), null, t + i * 0.03, d)); }
+      else { pluck(freq(n.s, n.f), n.bend ? freq(n.s, n.bend) : null, t, d); }
+      t += d;
+    });
+    timer = setTimeout(stop, (t - ctx.currentTime + 0.4) * 1000);
+  }
+
+  return { stop, toggle(seq, btn) { current === btn ? stop() : play(seq, btn); } };
+})();
+
 // ---------- Navigation ----------
 document.querySelectorAll('#tabs button').forEach(b => {
   b.addEventListener('click', () => {
@@ -14,6 +102,7 @@ document.querySelectorAll('#tabs button').forEach(b => {
     document.querySelectorAll('.vue').forEach(x => x.classList.remove('actif'));
     b.classList.add('actif');
     document.getElementById('vue-' + b.dataset.vue).classList.add('actif');
+    if (typeof AudioPlayer !== 'undefined') AudioPlayer.stop();
   });
 });
 
@@ -24,6 +113,7 @@ document.getElementById('date-jour').textContent =
 
 // ---------- Vue Aujourd'hui (routine) ----------
 function renderRoutine() {
+  AudioPlayer.stop();
   const faits = LS.get('routine-faits-' + todayKey(), []);
   const streak = LS.get('streak', { n: 0, dernier: '' });
   const el = document.getElementById('vue-aujourdhui');
@@ -56,6 +146,7 @@ function renderRoutine() {
         <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${b.tempoDepart} ${b.unite}</span></span></div>
         <div class="info-ligne"><span class="k">Focus</span><span class="v">${b.focus}</span></div>
         <div class="info-ligne"><span class="k">Palier</span><span class="v">${b.palier}</span></div>
+        ${AUDIO.bloc[b.id] ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter l'exo</button>` : ''}
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-bloc="${b.id}">
           ${fait ? 'Annuler' : 'Bloc fait ✓'}
         </button>
@@ -65,6 +156,9 @@ function renderRoutine() {
 
   el.querySelectorAll('button[data-bloc]').forEach(btn => {
     btn.addEventListener('click', () => toggleBloc(btn.dataset.bloc));
+  });
+  el.querySelectorAll('button[data-audio-bloc]').forEach(btn => {
+    btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO.bloc[btn.dataset.audioBloc], btn));
   });
 }
 
@@ -89,6 +183,7 @@ function majStreak() {
 
 // ---------- Vue Morceau ----------
 function renderMorceau() {
+  AudioPlayer.stop();
   const valides = LS.get('morceau-' + MORCEAU.id, []);
   const el = document.getElementById('vue-morceau');
   const total = MORCEAU.etapes.length;
@@ -119,6 +214,7 @@ function renderMorceau() {
         <div class="label">Tablature</div>
         <pre class="tab">${e.tab.join('\n')}</pre>
         <p class="astuce"><strong>Validée quand :</strong> ${e.valideQuand}</p>
+        ${AUDIO.etape[e.id] ? `<button class="btn ecouter" data-audio-etape="${e.id}">▶ Écouter l'étape</button>` : ''}
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-etape="${e.id}">
           ${fait ? 'Annuler la validation' : 'Valider cette étape ✓'}
         </button>
@@ -128,6 +224,9 @@ function renderMorceau() {
 
   el.querySelectorAll('button[data-etape]').forEach(btn => {
     btn.addEventListener('click', () => toggleEtape(parseInt(btn.dataset.etape, 10)));
+  });
+  el.querySelectorAll('button[data-audio-etape]').forEach(btn => {
+    btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO.etape[btn.dataset.audioEtape], btn));
   });
 }
 
