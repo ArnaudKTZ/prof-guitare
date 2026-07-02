@@ -370,6 +370,121 @@ const ROUTINE = {
         }
       ]
     }
+  ],
+  // Exos en plus, affichés seulement en séance 30 min ("Pour aller plus loin").
+  bonus: [
+    {
+      id: "legato",
+      titre: "Legato (hammer-on / pull-off)",
+      duree: "3-4 min",
+      guitare: "Électro-acoustique",
+      niveaux: [
+        {
+          nom: "Marteau & tiré sur 2 notes",
+          but: "Jouer sans repincer : la main gauche fait sonner la 2e note (hammer), puis la retire (pull-off).",
+          tab: [
+            "Hammer-on (h) puis pull-off (p) en penta position 1 :",
+            "G|-10h12p10-10h12p10-|",
+            "D|-10h12p10-10h12p10-|"
+          ],
+          tempoDepart: 60, unite: "bpm (croches)",
+          palier: "Les deux notes sonnent fort et égales à 90 bpm → niveau 2.",
+          focus: "La force vient du doigt qui frappe, pas du médiator. Économie de main droite.",
+          audio: { bpm: 80, notes: [
+            {s:3,f:10},{s:3,f:12},{s:3,f:10},{s:3,f:12},{s:4,f:10},{s:4,f:12},{s:4,f:10},{s:4,f:12}
+          ]}
+        },
+        {
+          nom: "Legato sur toute la box",
+          but: "Enchaîner hammers et pull-offs sur la position 1 entière, un seul coup de médiator par corde.",
+          tab: [
+            "Monte en hammer, descends en pull-off, 1 attaque par corde :",
+            "e|-10h13-|  B|-10h13-|  G|-10h12-| ... et retour en pull-off"
+          ],
+          tempoDepart: 55, unite: "bpm (croches)",
+          palier: "Fluide et régulier à 85 bpm = ta main gauche gagne en autonomie.",
+          focus: "C'est ce qui rend le jeu blues coulant. Pas de trou de son entre les notes.",
+          audio: { bpm: 80, notes: [
+            {s:6,f:10},{s:6,f:13},{s:5,f:10},{s:5,f:12},{s:4,f:10},{s:4,f:12},
+            {s:3,f:10},{s:3,f:12},{s:2,f:10},{s:2,f:13},{s:1,f:10},{s:1,f:13}
+          ]}
+        }
+      ]
+    },
+    {
+      id: "oreille",
+      titre: "Oreille (ton atout de musicien)",
+      duree: "3-4 min",
+      guitare: "Électro-acoustique",
+      niveaux: [
+        {
+          nom: "Trouver la tonique",
+          but: "Écouter le ré (la maison du morceau), le chanter, puis le retrouver ailleurs sur le manche.",
+          tab: [
+            "Appuie sur Écouter : c'est un RÉ.",
+            "1) Chante-le. 2) Trouve un autre ré sur le manche (case 10 mi grave,",
+            "   ré à vide, case 3 corde si...). 3) Vérifie qu'ils sonnent pareil."
+          ],
+          tempoDepart: 60, unite: "à ton rythme",
+          palier: "Tu retrouves le ré sans chercher → niveau 2.",
+          focus: "Batteur = grande oreille rythmique. On la transforme en oreille mélodique.",
+          audio: { bpm: 50, notes: [
+            {s:4,f:0,d:1.5},{r:true,d:1},{s:2,f:3,d:1.5}
+          ]}
+        },
+        {
+          nom: "Reconnaître tierce & quinte",
+          but: "Les 3 notes qui font le son du blues : la tonique, la tierce mineure, la quinte.",
+          tab: [
+            "Écoute : RÉ (tonique) → FA (tierce mineure, le son 'triste') → LA (quinte, le son 'stable').",
+            "Rejoue-les, puis essaie de les reconnaître les yeux fermés."
+          ],
+          tempoDepart: 60, unite: "à ton rythme",
+          palier: "Tu distingues tierce et quinte à l'oreille = tu improviseras juste.",
+          focus: "Chante chaque note avant de la jouer. L'oreille guide les doigts.",
+          audio: { bpm: 55, notes: [
+            {s:4,f:0,d:1},{s:4,f:3,d:1},{s:4,f:7,d:1.5}
+          ]}
+        }
+      ]
+    },
+    {
+      id: "impro",
+      titre: "Impro blues (phrasé)",
+      duree: "3-5 min",
+      guitare: "Stratocaster",
+      niveaux: [
+        {
+          nom: "Question / réponse",
+          but: "Faire parler la guitare : une petite phrase (question), un silence, une phrase qui répond.",
+          tab: [
+            "Écoute la question (penta ré mineur + bend), puis invente ta réponse dans le silence.",
+            "3-4 notes bien placées suffisent. Le silence fait partie de la musique."
+          ],
+          tempoDepart: 65, unite: "bpm",
+          palier: "Tes réponses tombent en place et sonnent bluesy → niveau 2.",
+          focus: "Comme un dialogue de batterie : appel / réponse. Ton terrain.",
+          audio: { bpm: 70, notes: [
+            {s:3,f:12,bend:14,d:1},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{r:true,d:2}
+          ]}
+        },
+        {
+          nom: "Un chorus libre",
+          but: "12 mesures d'impro en penta ré mineur, avec tes bends et ton vibrato, sur le métronome.",
+          tab: [
+            "Pose le métro, joue un tour complet en te baladant dans la penta.",
+            "Vise le placement et le phrasé, pas la vitesse. Enregistre-toi si tu peux."
+          ],
+          tempoDepart: 60, unite: "bpm",
+          palier: "Un chorus qui tient debout tout seul = tu es musicien, plus seulement exécutant.",
+          focus: "Respire entre les phrases. Une note tenue avec vibrato vaut dix notes rapides.",
+          audio: { bpm: 70, notes: [
+            {s:2,f:13,bend:15,d:1},{s:2,f:10,d:0.5},{s:3,f:12,d:0.5},{s:3,f:10,d:1},
+            {r:true,d:0.5},{s:1,f:10,d:0.5},{s:1,f:13,bend:15,d:1.5}
+          ]}
+        }
+      ]
+    }
   ]
 };
 

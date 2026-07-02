@@ -75,61 +75,80 @@ document.getElementById('date-jour').textContent =
   new Date().toLocaleDateString('fr-FR', dOpt);
 
 // ---------- Vue Aujourd'hui (routine) ----------
+const trouveBloc = id => [...ROUTINE.blocs, ...(ROUTINE.bonus || [])].find(b => b.id === id);
+
+function carteBloc(b, faits) {
+  const fait = faits.includes(b.id);
+  const strat = b.guitare.toUpperCase().includes('STRAT');
+  const nb = b.niveaux.length;
+  const lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), nb - 1));
+  const n = b.niveaux[lvl];
+  const navNiv = nb > 1 ? `
+      <div class="niveau-nav">
+        <button class="niv-btn" data-niv-prev="${b.id}" ${lvl === 0 ? 'disabled' : ''}>◀</button>
+        <span class="niv-label">Niveau ${lvl + 1}/${nb} · ${n.nom}</span>
+        <button class="niv-btn" data-niv-next="${b.id}" ${lvl === nb - 1 ? 'disabled' : ''}>▶</button>
+      </div>` : `<div class="niveau-nav"><span class="niv-label">${n.nom}</span></div>`;
+  return `
+    <div class="carte">
+      <h3>${b.titre} ${fait ? '✅' : ''}</h3>
+      <div>
+        <span class="pill duree">${b.duree}</span>
+        <span class="pill ${strat ? 'strat' : 'duree'}">${b.guitare}</span>
+      </div>
+      ${navNiv}
+      <p class="but">${n.but}</p>
+      <div class="label">Tablature</div>
+      <pre class="tab">${n.tab.join('\n')}</pre>
+      <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${n.tempoDepart} ${n.unite}</span></span></div>
+      <div class="info-ligne"><span class="k">Focus</span><span class="v">${n.focus}</span></div>
+      <div class="info-ligne"><span class="k">Palier</span><span class="v">${n.palier}</span></div>
+      <div class="actions-exo">
+        ${n.audio ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter</button>` : ''}
+        <button class="btn metro-exo" data-metro="${n.tempoDepart}">🥁 Métro ${n.tempoDepart}</button>
+      </div>
+      <button class="btn ${fait ? 'annuler' : 'valider'}" data-bloc="${b.id}">
+        ${fait ? 'Annuler' : 'Bloc fait ✓'}
+      </button>
+    </div>`;
+}
+
 function renderRoutine() {
   AudioPlayer.stop();
   const faits = LS.get('routine-faits-' + todayKey(), []);
   const streak = LS.get('streak', { n: 0, dernier: '' });
+  const seance = LS.get('seance', 'court'); // 'court' (15-20 min) | 'long' (30 min)
   const el = document.getElementById('vue-aujourdhui');
 
-  const total = ROUTINE.blocs.length;
-  const done = faits.length;
+  const bonus = ROUTINE.bonus || [];
+  const actifs = seance === 'long' ? [...ROUTINE.blocs, ...bonus] : ROUTINE.blocs;
+  const total = actifs.length;
+  const done = actifs.filter(b => faits.includes(b.id)).length;
 
   let html = `
     <div class="carte">
       <h3>${ROUTINE.titre}</h3>
       <div class="meta">${ROUTINE.soustitre} · ${ROUTINE.tonalite}</div>
+      <div class="seance-choix">
+        <button class="seance-btn ${seance === 'court' ? 'actif' : ''}" data-seance="court">15-20 min</button>
+        <button class="seance-btn ${seance === 'long' ? 'actif' : ''}" data-seance="long">30 min · exos en +</button>
+      </div>
       <div class="barre"><span style="width:${Math.round(done/total*100)}%"></span></div>
       <div class="pct">${done}/${total} blocs</div>
       ${streak.n > 0 ? `<div class="streak">🔥 ${streak.n} jour${streak.n>1?'s':''} d'affilée</div>` : ''}
     </div>`;
 
-  ROUTINE.blocs.forEach(b => {
-    const fait = faits.includes(b.id);
-    const strat = b.guitare.toUpperCase().includes('STRAT');
-    const nb = b.niveaux.length;
-    let lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), nb - 1));
-    const n = b.niveaux[lvl];
-    const navNiv = nb > 1 ? `
-        <div class="niveau-nav">
-          <button class="niv-btn" data-niv-prev="${b.id}" ${lvl === 0 ? 'disabled' : ''}>◀</button>
-          <span class="niv-label">Niveau ${lvl + 1}/${nb} · ${n.nom}</span>
-          <button class="niv-btn" data-niv-next="${b.id}" ${lvl === nb - 1 ? 'disabled' : ''}>▶</button>
-        </div>` : `<div class="niveau-nav"><span class="niv-label">${n.nom}</span></div>`;
-    html += `
-      <div class="carte">
-        <h3>${b.titre} ${fait ? '✅' : ''}</h3>
-        <div>
-          <span class="pill duree">${b.duree}</span>
-          <span class="pill ${strat ? 'strat' : 'duree'}">${b.guitare}</span>
-        </div>
-        ${navNiv}
-        <p class="but">${n.but}</p>
-        <div class="label">Tablature</div>
-        <pre class="tab">${n.tab.join('\n')}</pre>
-        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${n.tempoDepart} ${n.unite}</span></span></div>
-        <div class="info-ligne"><span class="k">Focus</span><span class="v">${n.focus}</span></div>
-        <div class="info-ligne"><span class="k">Palier</span><span class="v">${n.palier}</span></div>
-        <div class="actions-exo">
-          ${n.audio ? `<button class="btn ecouter" data-audio-bloc="${b.id}">▶ Écouter</button>` : ''}
-          <button class="btn metro-exo" data-metro="${n.tempoDepart}">🥁 Métro ${n.tempoDepart}</button>
-        </div>
-        <button class="btn ${fait ? 'annuler' : 'valider'}" data-bloc="${b.id}">
-          ${fait ? 'Annuler' : 'Bloc fait ✓'}
-        </button>
-      </div>`;
-  });
+  ROUTINE.blocs.forEach(b => { html += carteBloc(b, faits); });
+
+  if (seance === 'long' && bonus.length) {
+    html += `<div class="section-titre">Pour aller plus loin 🚀</div>`;
+    bonus.forEach(b => { html += carteBloc(b, faits); });
+  }
   el.innerHTML = html;
 
+  el.querySelectorAll('button[data-seance]').forEach(btn => {
+    btn.addEventListener('click', () => { LS.set('seance', btn.dataset.seance); renderRoutine(); });
+  });
   el.querySelectorAll('button[data-bloc]').forEach(btn => {
     btn.addEventListener('click', () => toggleBloc(btn.dataset.bloc));
   });
@@ -141,7 +160,7 @@ function renderRoutine() {
   });
   el.querySelectorAll('button[data-audio-bloc]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const b = ROUTINE.blocs.find(x => x.id === btn.dataset.audioBloc);
+      const b = trouveBloc(btn.dataset.audioBloc);
       const lvl = Math.max(0, Math.min(LS.get('niveau-' + b.id, 0), b.niveaux.length - 1));
       AudioPlayer.toggle(b.niveaux[lvl].audio, btn);
     });
@@ -152,7 +171,7 @@ function renderRoutine() {
 }
 
 function changerNiveau(id, delta) {
-  const b = ROUTINE.blocs.find(x => x.id === id);
+  const b = trouveBloc(id);
   const lvl = Math.max(0, Math.min(LS.get('niveau-' + id, 0) + delta, b.niveaux.length - 1));
   LS.set('niveau-' + id, lvl);
   renderRoutine();
@@ -169,7 +188,8 @@ function toggleBloc(id) {
     const acquis = LS.get('routine-acquis', []);
     if (!acquis.includes(id)) LS.set('routine-acquis', [...acquis, id]);
   }
-  if (faits.length === ROUTINE.blocs.length) majStreak();
+  // Streak = séance de base complète (les bonus 30 min sont du rab, pas obligatoires).
+  if (ROUTINE.blocs.every(b => faits.includes(b.id))) majStreak();
   renderRoutine();
   renderMorceau(); // le déblocage du morceau peut avoir changé
 }

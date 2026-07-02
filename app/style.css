@@ -193,3 +193,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 
 .astuce { font-size: 12px; color: var(--texte-doux); line-height: 1.5; margin-top: 6px; }
 .streak { text-align: center; font-size: 13px; color: var(--accent); margin: 2px 0 10px; font-weight: 600; }
+
+.seance-choix { display: flex; gap: 6px; margin: 10px 0; }
+.seance-btn {
+  flex: 1; padding: 9px 6px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  border: 1px solid var(--bordure); background: var(--bg-carte-2); color: var(--texte-doux); cursor: pointer;
+}
+.seance-btn.actif { background: var(--accent); color: #1a1a1f; border-color: var(--accent); }
+
+.section-titre {
+  text-align: center; font-size: 14px; font-weight: 800; color: var(--accent-2);
+  letter-spacing: 0.5px; margin: 6px 0 12px; text-transform: uppercase;
+}
