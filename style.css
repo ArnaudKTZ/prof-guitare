@@ -161,6 +161,16 @@ pre.tab {
 }
 .pulse-mini.bat { background: var(--accent); transform: scale(1.3); }
 
+/* Étape verrouillée (mode parcours) */
+.carte.verrouille { opacity: 0.85; border-style: dashed; }
+.carte.verrouille .num { background: var(--bg-carte-2); }
+.carte.verrouille h4 { color: var(--texte-doux); }
+.lock-panel { margin-top: 10px; }
+.lock-titre { font-weight: 700; color: var(--accent-2); margin: 0 0 8px; font-size: 14px; }
+.lock-item { font-size: 13px; color: var(--texte-doux); margin: 4px 0; }
+.lock-list { margin: 4px 0 0; padding-left: 18px; }
+.lock-list li { font-size: 13px; color: var(--accent); font-weight: 600; margin: 2px 0; }
+
 /* Métronome */
 #metro { text-align: center; }
 #metro .bpm-affiche { font-size: 64px; font-weight: 800; margin: 8px 0 0; letter-spacing: -2px; }
