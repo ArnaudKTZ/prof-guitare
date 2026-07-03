@@ -9,6 +9,7 @@
   --ok: #58c07a;
   --bordure: #3a3a45;
   --strat: #6ea8d8;       /* rappel "Strat" */
+  --nav-h: 64px;          /* hauteur mesurée de nav#tabs, mise à jour en JS */
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -210,6 +211,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #alphatab-viewport {
   max-height: 62vh; overflow: auto; margin-top: 10px;
   background: #f7f4ec; border: 1px solid var(--bordure); border-radius: 12px;
+  position: sticky; top: var(--nav-h); z-index: 5;
+  box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
 }
 #alphatab { color: #111; }
 #pt-piste {
