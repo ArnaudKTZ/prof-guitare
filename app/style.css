@@ -98,6 +98,14 @@ button.tempo-badge {
   border: 2px solid transparent; font-family: inherit; cursor: pointer; opacity: 0.6;
 }
 button.tempo-badge.actif { opacity: 1; border-color: #fff; }
+.mesures-sub { font-size: 12px; font-weight: 400; color: var(--texte-doux); }
+.accords-section { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.accord-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: var(--bg-carte-2); border: 1px solid var(--bordure); border-radius: 8px;
+  padding: 4px 8px; font-size: 12px; font-weight: 700; color: var(--accent);
+}
+.accord-chip small { color: var(--texte-doux); font-weight: 400; font-size: 10px; letter-spacing: 1px; }
 
 /* Progression morceau */
 .barre { height: 12px; background: var(--bg-carte-2); border-radius: 20px; overflow: hidden; margin: 8px 0 4px; }
