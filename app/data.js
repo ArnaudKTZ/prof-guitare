@@ -636,3 +636,214 @@ const AUDIO_ETAPE = {
     {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:2}
   ]}
 };
+
+// ---------- Méthode complète (zéro → guitar hero) ----------
+// Inspirée de la structure des méthodes de référence (JustinGuitar : progression par grades avec
+// accords ouverts puis barrés puis blues ; Fender Play : niveaux mêlant technique et mise en pratique ;
+// système CAGED et 5 positions de la pentatonique pour la partie gammes/solos).
+// Parcours linéaire en 4 ceintures × 4 piliers (Rythmique, Accords, Gammes, Solos) = 16 modules.
+// Débloqués un par un dans l'ordre, comme les étapes d'un morceau. Tonalité de référence : la mineur,
+// cohérente avec le reste de l'appli (routine + morceau).
+const CURSUS = {
+  titre: "Méthode complète",
+  soustitre: "Zéro à guitar hero : rythmique, accords, gammes, solos. Un seul parcours, dans l'ordre.",
+  note: "Tu n'es pas débutant complet (tu as déjà les bases + la penta mineure) : les 4 premiers modules seront rapides pour toi, valide-les vite et avance. La valeur est plus loin, dans les ceintures orange et noire.",
+  modules: [
+    // Ceinture blanche — Les bases
+    {
+      id: "w1", ceinture: "Ceinture blanche · Les bases", categorie: "Rythmique",
+      titre: "Tenue & première pulsation",
+      but: "Tenir la guitare, poser la main droite, gratter un rythme simple et régulier.",
+      tab: [
+        "Cordes étouffées de la main gauche (mute), gratte en Bas-Bas-Bas-Bas au clic.",
+        "Un aller de médiator = un clic. Régulier, pas d'à-coups."
+      ],
+      tempoDepart: 60, unite: "bpm (temps)",
+      focus: "Le mouvement part du poignet, pas du coude. Regarde ton poignet, pas ta main gauche.",
+      palier: "16 temps réguliers sans décrochage → passe au motif bas-haut (module suivant)."
+    },
+    {
+      id: "w2", ceinture: "Ceinture blanche · Les bases", categorie: "Accords",
+      titre: "Em et Am, tes deux premiers accords",
+      but: "Poser proprement deux accords ouverts et basculer de l'un à l'autre.",
+      tab: ["Em : 022000    Am : x02210", "Pose Em, gratte 4 temps, repose Am, gratte 4 temps. Recommence."],
+      tempoDepart: 50, unite: "bpm (accords/4 temps)",
+      focus: "Doigts bien cambrés, seul le bout du doigt touche la corde. Vérifie qu'aucune corde ne sonne étouffée.",
+      palier: "10 changements Em↔Am sans temps mort → niveau suivant (C et G).",
+      audio: { bpm: 70, notes: [
+        {c:[[6,0],[5,2],[4,2],[3,0],[2,0],[1,0]],d:3}, {r:1,d:1},
+        {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:3}, {r:1,d:1}
+      ]}
+    },
+    {
+      id: "w3", ceinture: "Ceinture blanche · Les bases", categorie: "Gammes",
+      titre: "Les notes de la corde de mi grave",
+      but: "Mémoriser le nom des notes sur la corde la plus grave, la base de tout repérage sur le manche.",
+      tab: ["E|-0--1--3--5--7--8--10--12-|", "Mi-Fa-Sol-La-Si-Do-Ré-Mi(octave). Dis le nom à voix haute en jouant."],
+      tempoDepart: 50, unite: "bpm (une note/clic)",
+      focus: "Repère surtout Mi (0), Fa (1), Sol (3), La (5), Mi octave (12) : les points de repère les plus utiles.",
+      palier: "Tu nommes chaque note sans hésiter → fais pareil sur la corde de La (module suivant, en bonus mental).",
+      audio: { bpm: 70, notes: [{s:6,f:0},{s:6,f:1},{s:6,f:3},{s:6,f:5},{s:6,f:7},{s:6,f:8},{s:6,f:10},{s:6,f:12}] }
+    },
+    {
+      id: "w4", ceinture: "Ceinture blanche · Les bases", categorie: "Solos",
+      titre: "Une mélodie sur une seule corde",
+      but: "Contrôler le médiator et la main gauche sur une mélodie simple, une corde.",
+      tab: [
+        "e|-0-0-2-2-4-4-2-|-0-0-2-2-4-4-2-|-4-4-5-5-4-4-2-|-4-4-5-5-4-4-2-|",
+        "(Frère Jacques simplifié, corde de mi aigu, cases 0/2/4/5)"
+      ],
+      tempoDepart: 70, unite: "bpm (croches)",
+      focus: "Médiator qui alterne bas-haut même sur une seule corde. Un doigt par case.",
+      palier: "La mélodie reconnaissable sans note ratée → tu es prêt pour la ceinture jaune.",
+      audio: { bpm: 90, notes: [
+        {s:1,f:0},{s:1,f:0},{s:1,f:2},{s:1,f:2},{s:1,f:4},{s:1,f:4},{s:1,f:2,d:1},
+        {s:1,f:0},{s:1,f:0},{s:1,f:2},{s:1,f:2},{s:1,f:4},{s:1,f:4},{s:1,f:2,d:1}
+      ]}
+    },
+    // Ceinture jaune — Grille d'accords et premier riff
+    {
+      id: "y1", ceinture: "Ceinture jaune · Rythmique & accords", categorie: "Rythmique",
+      titre: "Motif D DU UDU",
+      but: "Le motif de strumming le plus utilisé en rock/pop : Bas . Bas-Haut . . Haut-Bas-Haut.",
+      tab: ["Compte : 1  +  2  +  3  +  4  +", "Gratte :  D  .  D  U  .  .  U  D  U", "Sur un accord tenu (Em), en boucle."],
+      tempoDepart: 65, unite: "bpm",
+      focus: "Les coups Haut (U) frôlent juste les 3 cordes aiguës, pas toutes les cordes.",
+      palier: "Motif fluide sans à-coups pendant 8 mesures → niveau suivant (changer d'accord dedans)."
+    },
+    {
+      id: "y2", ceinture: "Ceinture jaune · Rythmique & accords", categorie: "Accords",
+      titre: "C, G, D, A, E : le kit complet",
+      but: "Les 5 accords ouverts qui débloquent 80% des chansons rock/pop.",
+      tab: ["C:x32010  G:320003  D:xx0232  A:x02220  E:022100", "Enchaîne C→G→D→A→E→C en boucle, un accord par mesure."],
+      tempoDepart: 50, unite: "bpm (accords/mesure)",
+      focus: "Prépare tes doigts en l'air pendant le dernier temps de l'accord précédent, ne pose pas un doigt à la fois.",
+      palier: "Boucle complète sans blanc → niveau suivant (2 accords par mesure).",
+      audio: { bpm: 80, notes: [
+        {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2}, {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2},
+        {c:[[4,0],[3,2],[2,3],[1,2]],d:2}, {c:[[5,0],[4,2],[3,2],[2,2],[1,0]],d:2},
+        {c:[[6,0],[5,2],[4,2],[3,1],[2,0],[1,0]],d:2}
+      ]}
+    },
+    {
+      id: "y3", ceinture: "Ceinture jaune · Rythmique & accords", categorie: "Gammes",
+      titre: "Pentatonique mineure, position 1",
+      but: "La gamme la plus utile du rock/blues, en la mineur, position 5e case (celle que tu connais déjà).",
+      tab: [
+        "e|-----------------5-8-|", "B|--------------5-8----|", "G|-----------5-7-------|",
+        "D|--------5-7-----------|", "A|----5-7-----------------|", "E|5-8-----------------------|"
+      ],
+      tempoDepart: 70, unite: "bpm (croches)",
+      focus: "Monte puis redescends, chaque note égale en volume. Tu la connais déjà : valide vite si c'est acquis.",
+      palier: "Montée-descente propre à 100 bpm sans accroc.",
+      audio: { bpm: 90, notes: [
+        {s:6,f:5},{s:6,f:8},{s:5,f:5},{s:5,f:7},{s:4,f:5},{s:4,f:7},{s:3,f:5},{s:3,f:7},
+        {s:2,f:5},{s:2,f:8},{s:1,f:5},{s:1,f:8,d:1}
+      ]}
+    },
+    {
+      id: "y4", ceinture: "Ceinture jaune · Rythmique & accords", categorie: "Solos",
+      titre: "Ton premier riff penta",
+      but: "Un motif call & response sur 2 cordes, en la mineur pentatonique.",
+      tab: ["E|-5-------5-7-5-------|", "A|----5-7---------7-5-|", "(La mineur pentatonique, position 5)"],
+      tempoDepart: 70, unite: "bpm",
+      focus: "Laisse sonner chaque note, coupe les bruits parasites des cordes voisines avec les doigts qui ne jouent pas.",
+      palier: "Le riff propre en boucle à 100 bpm → tu es prêt pour la ceinture orange.",
+      audio: { bpm: 90, notes: [
+        {s:6,f:5},{s:5,f:5},{s:5,f:7},{s:6,f:5},{s:6,f:7},{s:6,f:5,d:1},
+        {s:5,f:7},{s:5,f:5,d:1}
+      ]}
+    },
+    // Ceinture orange — Blues, barrés, phrasé
+    {
+      id: "o1", ceinture: "Ceinture orange · Blues & barrés", categorie: "Rythmique",
+      titre: "Palm mute & feel shuffle",
+      but: "Le groove ternaire du blues/rock (ZZ Top et compagnie), avec la paume qui étouffe.",
+      tab: ["Étouffe les cordes avec le tranchant de la paume, joue en croches ternaires sur mi grave.", "E|--5-5-.5-5-.5-5-.5-5-.-|  (feel : ta-ta-TA, ta-ta-TA)"],
+      tempoDepart: 70, unite: "bpm",
+      focus: "Ton point fort de batteur : le FEEL avant la vitesse. Compte le triolet à voix haute.",
+      palier: "Le shuffle groove, pas mécanique → tu es prêt pour les riffs type ZZ Top."
+    },
+    {
+      id: "o2", ceinture: "Ceinture orange · Blues & barrés", categorie: "Accords",
+      titre: "Power chords + le barré F",
+      but: "Les power chords mobiles (2 doigts) et ton premier vrai accord barré.",
+      tab: [
+        "Power chord (5) : racine + quinte, 2 doigts, mobile sur tout le manche.",
+        "E|-3-3-3-3-5-5-5-5-|  A|-3-3-3-3-5-5-5-5-|  (Sol5 puis La5, même forme qui monte)",
+        "Puis le barré F : index à plat case 1, forme de Mi majeur décalée."
+      ],
+      tempoDepart: 60, unite: "bpm (accords/mesure)",
+      focus: "Barré : le tranchant de l'index, pas le plat. Pousse avec le pouce derrière le manche, pas avec la force du poignet.",
+      palier: "Power chords propres partout sur le manche + F qui sonne sans bourdon → barrés mobiles (ceinture noire)."
+    },
+    {
+      id: "o3", ceinture: "Ceinture orange · Blues & barrés", categorie: "Gammes",
+      titre: "Pentatonique position 2 + le pont 1↔2",
+      but: "La deuxième case de la pentatonique et le lien fluide avec la première.",
+      tab: [
+        "Position 2 (case 8, la mineur) :",
+        "e|-----------------8-10-|", "B|-------------8-10-----|", "G|---------7-9----------|",
+        "D|-----7-9-----------------|", "A|-7-8-----------------------|", "E|-8-------------------------|",
+        "Relie-la à la position 1 (case 5) par la note commune case 8 corde de mi grave."
+      ],
+      tempoDepart: 70, unite: "bpm (croches)",
+      focus: "Le glissement d'une position à l'autre doit être fluide, pas un saut hésitant.",
+      palier: "Tu enchaînes position 1 → 2 → 1 sans réfléchir à 100 bpm.",
+      audio: { bpm: 90, notes: [
+        {s:6,f:8},{s:5,f:7},{s:5,f:8},{s:4,f:7},{s:4,f:9},{s:3,f:7},{s:3,f:9},
+        {s:2,f:8},{s:2,f:10},{s:1,f:8},{s:1,f:10,d:1}
+      ]}
+    },
+    {
+      id: "o4", ceinture: "Ceinture orange · Blues & barrés", categorie: "Solos",
+      titre: "Bends, hammer/pull, ta première vraie phrase",
+      but: "Combiner bend, vibrato et legato dans une phrase bluesy complète.",
+      tab: ["G|--7b~~~----7h9p7----5--|  (bend d'un ton, vibrato, hammer/pull)", "Phrase en la mineur pentatonique, position 5."],
+      tempoDepart: 55, unite: "bpm",
+      focus: "Le bend tombe EXACTEMENT sur la note cible : vérifie à l'oreille avant de chercher la vitesse.",
+      palier: "La phrase avec bend juste et vibrato contrôlé à 90 bpm.",
+      audio: { bpm: 60, notes: [{s:3,f:7,bend:9,d:1.5},{s:3,f:7,d:0.5},{s:3,f:9,d:0.5},{s:3,f:7,d:0.5},{s:4,f:5,d:1.5}] }
+    },
+    // Ceinture noire — Guitar Hero
+    {
+      id: "n1", ceinture: "Ceinture noire · Guitar Hero", categorie: "Rythmique",
+      titre: "Syncopes & polyrythmie",
+      but: "Jouer en décalé du temps fort, exploiter ton oreille de batteur.",
+      tab: ["Accentue le contre-temps (le \"and\" après chaque temps), coupe net avec la paume.", "Pattern :  .  X  .  X  X  .  X  .   (X = coup accentué, . = étouffé/silence)"],
+      tempoDepart: 80, unite: "bpm",
+      focus: "C'est ton terrain : sens où tombe la syncope sans la compter, comme derrière un kit.",
+      palier: "Le groove syncopé tient tout seul, même sans regarder le métronome."
+    },
+    {
+      id: "n2", ceinture: "Ceinture noire · Guitar Hero", categorie: "Accords",
+      titre: "CAGED : un accord, 5 formes",
+      but: "Comprendre le système CAGED : le même accord existe à 5 endroits du manche.",
+      tab: ["Do majeur en forme C (ouverte), puis en forme A, G, E, D plus haut sur le manche.", "Même accord, 5 endroits différents : c'est le système CAGED."],
+      tempoDepart: 60, unite: "bpm (accords/mesure)",
+      focus: "Reconnais la forme \"sous tes doigts\" avant de la jouer, ne cherche pas les cases au hasard.",
+      palier: "Tu retrouves Do majeur aux 5 endroits du manche sans hésiter."
+    },
+    {
+      id: "n3", ceinture: "Ceinture noire · Guitar Hero", categorie: "Gammes",
+      titre: "Les 5 positions reliées + la couleur majeure",
+      but: "Le manche entier devient un seul terrain de jeu : les 5 positions de la penta enchaînées.",
+      tab: [
+        "Enchaîne les 5 positions de la pentatonique mineure sur tout le manche, sans redescendre.",
+        "Puis ajoute les 2 notes de la gamme majeure relative pour un son plus \"rock\" (couleur mixolydienne)."
+      ],
+      tempoDepart: 70, unite: "bpm (croches)",
+      focus: "Le manche entier devient un seul terrain de jeu, pas 5 cases isolées.",
+      palier: "Tu montes du case 0 au case 15 en pentatonique sans t'arrêter, aller-retour."
+    },
+    {
+      id: "n4", ceinture: "Ceinture noire · Guitar Hero", categorie: "Solos",
+      titre: "Improvisation libre sur grille 12 mesures",
+      but: "Le boss final : improviser une vraie phrase musicale sur une grille de blues.",
+      tab: ["Grille blues en la : Am(4) Dm(2) Am(2) E7(1) Dm(1) Am(2)", "Improvise avec la pentatonique + bends + vibrato + ton groove de batteur."],
+      tempoDepart: 70, unite: "bpm",
+      focus: "Pense en phrases courtes avec des silences, pas un flot continu de notes. Réponds à ce que tu viens de jouer.",
+      palier: "3 chorus de 12 mesures qui tiennent debout, avec au moins une phrase que tu es fier de rejouer. Bienvenue chez les guitar heroes."
+    }
+  ]
+};

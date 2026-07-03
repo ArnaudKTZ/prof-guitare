@@ -312,6 +312,94 @@ function toggleEtape(id) {
   renderMorceau();
 }
 
+// ---------- Vue Apprendre (méthode complète, zéro → guitar hero) ----------
+// Parcours linéaire de modules (rythmique/accords/gammes/solos, 4 ceintures). Chaque module se
+// débloque quand le précédent est validé, comme les étapes d'un morceau, mais sans dépendre de la
+// routine du jour : c'est un cursus autonome.
+function renderCursus() {
+  AudioPlayer.stop();
+  const valides = LS.get('cursus-valides', []);
+  const el = document.getElementById('vue-apprendre');
+  const total = CURSUS.modules.length;
+  const pct = Math.round(valides.length / total * 100);
+
+  let html = `
+    <div class="carte">
+      <h3>${CURSUS.titre}</h3>
+      <p class="astuce">${CURSUS.soustitre}</p>
+      <p class="astuce">${CURSUS.note}</p>
+      <div class="barre"><span style="width:${pct}%"></span></div>
+      <div class="pct">${valides.length}/${total} modules</div>
+    </div>`;
+
+  let ceintureAffichee = null;
+  CURSUS.modules.forEach((m, idx) => {
+    if (m.ceinture !== ceintureAffichee) {
+      ceintureAffichee = m.ceinture;
+      html += `<div class="ceinture-titre">${ceintureAffichee}</div>`;
+    }
+    const fait = valides.includes(m.id);
+    const prevOk = idx === 0 || valides.includes(CURSUS.modules[idx - 1].id);
+    const emoji = m.categorie === 'Rythmique' ? '🥁' : m.categorie === 'Accords' ? '✋' : m.categorie === 'Gammes' ? '🎼' : '🔥';
+
+    if (!prevOk && !fait) {
+      html += `
+        <div class="carte verrouille">
+          <div class="etape"><div class="tete"><div class="num">🔒</div><h4>${emoji} ${m.titre}</h4></div></div>
+          <div class="lock-panel">
+            <p class="lock-titre">Module verrouillé</p>
+            <p class="lock-item">→ Valide d'abord le module précédent (${CURSUS.modules[idx - 1].titre}).</p>
+          </div>
+        </div>`;
+      return;
+    }
+
+    html += `
+      <div class="carte">
+        <div class="etape ${fait ? 'faite' : ''}">
+          <div class="tete">
+            <div class="num">${fait ? '✓' : idx + 1}</div>
+            <h4>${emoji} ${m.titre}</h4>
+          </div>
+        </div>
+        <span class="pill duree">${m.categorie}</span>
+        <p class="but">${m.but}</p>
+        <div class="label">Tablature</div>
+        <pre class="tab">${m.tab.join('\n')}</pre>
+        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${m.tempoDepart} ${m.unite}</span></span></div>
+        <div class="info-ligne"><span class="k">Focus</span><span class="v">${m.focus}</span></div>
+        <div class="info-ligne"><span class="k">Palier</span><span class="v">${m.palier}</span></div>
+        <div class="actions-exo">
+          ${m.audio ? `<button class="btn ecouter" data-audio-cursus="${m.id}">▶ Écouter</button>` : ''}
+          <button class="btn metro-exo" data-metro="${m.tempoDepart}">🥁 Métro ${m.tempoDepart}</button>
+        </div>
+        <button class="btn ${fait ? 'annuler' : 'valider'}" data-cursus="${m.id}">
+          ${fait ? 'Annuler la validation' : 'Valider ce module ✓'}
+        </button>
+      </div>`;
+  });
+  el.innerHTML = html;
+
+  el.querySelectorAll('button[data-cursus]').forEach(btn => {
+    btn.addEventListener('click', () => toggleModuleCursus(btn.dataset.cursus));
+  });
+  el.querySelectorAll('button[data-audio-cursus]').forEach(btn => {
+    const m = CURSUS.modules.find(x => x.id === btn.dataset.audioCursus);
+    btn.addEventListener('click', () => AudioPlayer.toggle(m.audio, btn));
+  });
+  el.querySelectorAll('button[data-metro]').forEach(btn => {
+    btn.addEventListener('click', () => toggleMetroExo(parseInt(btn.dataset.metro, 10)));
+  });
+}
+
+function toggleModuleCursus(id) {
+  const k = 'cursus-valides';
+  let v = LS.get(k, []);
+  v = v.includes(id) ? v.filter(x => x !== id) : [...v, id];
+  LS.set(k, v);
+  renderCursus();
+}
+
 // ---------- Vue Métronome ----------
 const Metro = (() => {
   let ctx = null, timer = null, bpm = LS.get('metro-bpm', 60), running = false, beat = 0;
@@ -882,6 +970,7 @@ window.addEventListener('orientationchange', ajusterHauteurNav);
 // ---------- Init ----------
 renderRoutine();
 renderMorceau();
+renderCursus();
 renderPartition();
 renderMetro();
 ajusterHauteurNav();
