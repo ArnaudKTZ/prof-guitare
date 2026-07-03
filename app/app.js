@@ -457,7 +457,7 @@ async function initAlpha() {
   });
   alphaApi.renderStarted.on(() => partitionStatus('Rendu de la partition...'));
   alphaApi.renderFinished.on(() => partitionStatus(''));
-  alphaApi.scoreLoaded.on(score => remplirPistes(score));
+  alphaApi.scoreLoaded.on(score => { remplirPistes(score); afficherPlan(); });
   alphaApi.playerStateChanged.on(e => {
     const b = document.getElementById('pt-play');
     if (b) b.textContent = e.state === 1 ? '⏸ Pause' : '▶ Lecture';
@@ -486,7 +486,7 @@ function brancherControlesPartition() {
   document.getElementById('pt-play').addEventListener('click', () => alphaApi && alphaApi.playPause());
   document.getElementById('pt-stop').addEventListener('click', () => alphaApi && alphaApi.stop());
   document.getElementById('pt-piste').addEventListener('change', e => {
-    if (alphaApi && alphaApi.score) alphaApi.renderTracks([alphaApi.score.tracks[parseInt(e.target.value, 10)]]);
+    if (alphaApi && alphaApi.score) { alphaApi.renderTracks([alphaApi.score.tracks[parseInt(e.target.value, 10)]]); afficherPlan(); }
   });
   document.getElementById('pt-vitesse').addEventListener('input', e => {
     const v = parseInt(e.target.value, 10);
@@ -530,6 +530,119 @@ function ouvrirPartition() {
     .catch(e => { partitionStatus('Erreur : ' + e.message); partitionChargee = false; });
 }
 
+// Génère un plan d'entraînement à partir de la partition analysée (métadonnées seulement).
+function genererPlan(trackIndex) {
+  if (!alphaApi || !alphaApi.score) return { tempo: 100, sections: [] };
+  const score = alphaApi.score;
+  const tempo = score.tempo || 100;
+  const bars = score.tracks[trackIndex].staves[0].bars;
+  const N = bars.length;
+  const stat = bars.map(bar => {
+    let notes = 0, bends = 0, chords = 0, allRest = true;
+    (bar.voices || []).forEach(v => (v.beats || []).forEach(b => {
+      const ns = b.notes || [];
+      if (!b.isRest && ns.length) allRest = false;
+      if (ns.length > 1) chords++;
+      ns.forEach(n => { notes++; if (n.hasBend || n.bendType) bends++; });
+    }));
+    return { notes, bends, chords, allRest };
+  });
+  const CHUNK = 4;
+  const sections = [];
+  for (let i = 0; i < N; i += CHUNK) {
+    const from = i, to = Math.min(i + CHUNK - 1, N - 1);
+    let notes = 0, bends = 0, chords = 0;
+    for (let j = from; j <= to; j++) { notes += stat[j].notes; bends += stat[j].bends; chords += stat[j].chords; }
+    if (notes === 0) continue;
+    const nbBars = to - from + 1;
+    const dens = notes / nbBars;
+    let type = 'Riff';
+    if (bends >= 2 || dens >= 6) type = 'Solo / lead';
+    else if (chords > 0 && dens < 4) type = 'Rythmique';
+    const base = type === 'Solo / lead' ? 0.4 : 0.5;
+    const tempos = [Math.round(tempo * base), Math.round(tempo * 0.7), tempo];
+    sections.push({ from, to, type, notes, bends, tempos });
+  }
+  return { tempo, sections };
+}
+
+function planKey() {
+  const nom = LS.get('partition-nom', 'x');
+  const ti = document.getElementById('pt-piste') ? document.getElementById('pt-piste').value : 0;
+  return 'plan-' + nom + '-' + ti;
+}
+
+function afficherPlan() {
+  const cont = document.getElementById('plan-morceau');
+  if (!cont) return;
+  const ti = parseInt(document.getElementById('pt-piste').value || 0, 10);
+  const { tempo, sections } = genererPlan(ti);
+  if (!sections.length) { cont.innerHTML = ''; return; }
+  const faits = LS.get(planKey(), []);
+  const pct = Math.round(faits.length / sections.length * 100);
+  let html = `
+    <div class="carte">
+      <h3>Plan d'entraînement de ce morceau 🎯</h3>
+      <p class="astuce">Généré depuis ta partition (piste affichée). ${sections.length} sections à ${tempo} bpm au final. Travaille chaque section en boucle lente, valide-la, monte le tempo.</p>
+      <div class="barre"><span style="width:${pct}%"></span></div>
+      <div class="pct">${faits.length}/${sections.length} sections</div>
+      <button class="btn ghost" id="plan-stop">⏹ Arrêter la boucle</button>
+    </div>`;
+  sections.forEach((s, idx) => {
+    const fait = faits.includes(idx);
+    const emoji = s.type === 'Solo / lead' ? '🔥' : (s.type === 'Rythmique' ? '🎸' : '🎵');
+    html += `
+      <div class="carte plan-section ${fait ? 'faite' : ''}">
+        <div class="tete"><div class="num">${fait ? '✓' : idx + 1}</div>
+          <h4>${emoji} Mesures ${s.from + 1}-${s.to + 1} · ${s.type}</h4></div>
+        <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map(t => `<span class="tempo-badge" style="margin-left:4px">${t}</span>`).join('')}</span></div>
+        <div class="actions-exo">
+          <button class="btn ecouter" data-loop="${idx}">▶ Boucler (lent)</button>
+          <button class="btn ${fait ? 'annuler' : 'valider'}" data-plan="${idx}">${fait ? 'Annuler' : 'Validée ✓'}</button>
+        </div>
+      </div>`;
+  });
+  cont.innerHTML = html;
+
+  document.getElementById('plan-stop').addEventListener('click', arreterBoucle);
+  cont.querySelectorAll('button[data-loop]').forEach(b =>
+    b.addEventListener('click', () => travaillerSection(sections[parseInt(b.dataset.loop, 10)])));
+  cont.querySelectorAll('button[data-plan]').forEach(b =>
+    b.addEventListener('click', () => { togglePlanSection(parseInt(b.dataset.plan, 10), sections.length); }));
+}
+
+function togglePlanSection(idx, total) {
+  const k = planKey();
+  let f = LS.get(k, []);
+  f = f.includes(idx) ? f.filter(x => x !== idx) : [...f, idx];
+  LS.set(k, f);
+  afficherPlan();
+}
+
+function travaillerSection(s) {
+  if (!alphaApi || !alphaApi.tickCache) return;
+  const tc = alphaApi.tickCache;
+  const range = new alphaTab.synth.PlaybackRange();
+  range.startTick = tc.masterBars[s.from].start;
+  range.endTick = tc.masterBars[s.to].end;
+  alphaApi.playbackRange = range;
+  alphaApi.isLooping = true;
+  const pct = Math.round(s.tempos[0] / (alphaApi.score.tempo || 100) * 100);
+  alphaApi.playbackSpeed = pct / 100;
+  const slider = document.getElementById('pt-vitesse');
+  if (slider) { slider.value = Math.min(100, Math.max(25, pct)); document.getElementById('pt-vitesse-val').textContent = slider.value + '%'; }
+  const loopCb = document.getElementById('pt-loop'); if (loopCb) loopCb.checked = true;
+  alphaApi.playPause();
+}
+
+function arreterBoucle() {
+  if (!alphaApi) return;
+  alphaApi.stop();
+  alphaApi.isLooping = false;
+  alphaApi.playbackRange = null;
+  const loopCb = document.getElementById('pt-loop'); if (loopCb) loopCb.checked = false;
+}
+
 function renderPartition() {
   const el = document.getElementById('vue-partition');
   const nom = LS.get('partition-nom', null);
@@ -554,6 +667,7 @@ function renderPartition() {
         <label class="astuce" style="display:block;"><input type="checkbox" id="pt-loop"> Boucler la sélection</label>
       </div>
     </div>
+    <div id="plan-morceau"></div>
     <div id="partition-status" class="astuce" style="text-align:center;"></div>
     <div id="alphatab-viewport"><div id="alphatab"></div></div>`;
   document.getElementById('pt-fichier').addEventListener('change', importPartition);

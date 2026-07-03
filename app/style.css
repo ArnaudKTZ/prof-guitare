@@ -221,3 +221,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .at-cursor-bar { background: rgba(224, 164, 88, 0.18); }
 .at-cursor-beat { background: #e11d1d; width: 3px; }
 .at-highlight * { fill: #e11d1d; stroke: #e11d1d; }
+.plan-section { padding: 12px 14px; }
+.plan-section .tete { display: flex; align-items: center; gap: 8px; }
+.plan-section h4 { margin: 0; font-size: 14px; flex: 1; }
+.plan-section.faite { border-left: 3px solid var(--ok); }
