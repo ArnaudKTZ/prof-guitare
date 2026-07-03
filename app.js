@@ -473,8 +473,10 @@ async function initAlpha() {
   alphaApi.scoreLoaded.on(score => { remplirPistes(score); afficherPlan(); });
   alphaApi.playerStateChanged.on(e => {
     enLecture = e.state === 1;
+    if (!enLecture) sectionActive = null;
     const b = document.getElementById('pt-play');
     if (b) b.textContent = e.state === 1 ? '⏸ Pause' : '▶ Lecture';
+    majBoutonsPlan();
   });
   return alphaApi;
 }
@@ -528,7 +530,7 @@ function brancherControlesPartition() {
   if (brancherControlesPartition.fait) return;
   brancherControlesPartition.fait = true;
   document.getElementById('pt-play').addEventListener('click', () => alphaApi && alphaApi.playPause());
-  document.getElementById('pt-stop').addEventListener('click', () => { sectionActive = null; if (alphaApi) alphaApi.stop(); });
+  document.getElementById('pt-stop').addEventListener('click', () => { sectionActive = null; if (alphaApi) alphaApi.stop(); majBoutonsPlan(); });
   document.getElementById('pt-piste').addEventListener('change', () => afficherPlan());
   document.getElementById('pt-notation').addEventListener('change', e => {
     if (!alphaApi) return;
@@ -759,21 +761,46 @@ function afficherPlan() {
         <p class="astuce">${s.coaching}</p>
         <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map((t, ti) => `<button type="button" class="tempo-badge${ti === 0 ? ' actif' : ''}" data-idx="${idx}" data-ti="${ti}" style="margin-left:4px">${t}</button>`).join('')}</span></div>
         <div class="actions-exo">
+          <button class="btn ecouter" data-play="${idx}">▶ Écouter</button>
           <button class="btn ${fait ? 'annuler' : 'valider'}" data-plan="${idx}">${fait ? 'Annuler' : 'Validée ✓'}</button>
         </div>
       </div>`;
   });
   cont.innerHTML = html;
 
-  document.getElementById('plan-stop').addEventListener('click', () => { sectionActive = null; arreterBoucle(); });
+  document.getElementById('plan-stop').addEventListener('click', () => { sectionActive = null; arreterBoucle(); majBoutonsPlan(); });
   cont.querySelectorAll('button.tempo-badge').forEach(b => b.addEventListener('click', () => {
     const idx = parseInt(b.dataset.idx, 10), ti = parseInt(b.dataset.ti, 10);
     b.parentElement.querySelectorAll('.tempo-badge').forEach(x => x.classList.remove('actif'));
     b.classList.add('actif');
     choisirTempoSection(sections[idx], idx, sections[idx].tempos[ti]);
+    majBoutonsPlan();
+  }));
+  cont.querySelectorAll('button[data-play]').forEach(b => b.addEventListener('click', () => {
+    const idx = parseInt(b.dataset.play, 10);
+    if (sectionActive === idx && enLecture) {
+      sectionActive = null;
+      arreterBoucle();
+    } else {
+      const actif = cont.querySelector(`.tempo-badge.actif[data-idx="${idx}"]`);
+      const ti = actif ? parseInt(actif.dataset.ti, 10) : 0;
+      choisirTempoSection(sections[idx], idx, sections[idx].tempos[ti]);
+    }
+    majBoutonsPlan();
   }));
   cont.querySelectorAll('button[data-plan]').forEach(b =>
     b.addEventListener('click', () => { togglePlanSection(parseInt(b.dataset.plan, 10), sections.length); }));
+  majBoutonsPlan();
+}
+
+// Reflète l'état de lecture (quelle section joue) sur les boutons ▶/⏸ de chaque carte d'exo.
+function majBoutonsPlan() {
+  document.querySelectorAll('#plan-morceau button[data-play]').forEach(b => {
+    const idx = parseInt(b.dataset.play, 10);
+    const actif = enLecture && sectionActive === idx;
+    b.textContent = actif ? '⏸ Stop' : '▶ Écouter';
+    b.classList.toggle('joue', actif);
+  });
 }
 
 function togglePlanSection(idx, total) {
