@@ -550,25 +550,25 @@ const MORCEAU = {
   titre: "I Need You Tonight",
   artiste: "ZZ Top",
   album: "Eliminator (1983)",
-  tonalite: "La mineur · slow blues",
+  tonalite: "La mineur · ~98 bpm · accordage standard",
   guitare: "Stratocaster",
-  note: "Objectif : la version fidèle. L'appli est ton PLAN d'entraînement ; ta partition, c'est Songsterr (que tu lis dans ton navigateur). Je ne recopie pas leur tablature. Les tabs ci-dessous sont des repères simplifiés de ma main pour démarrer chaque section ; les notes EXACTES (surtout le solo), tu les lis sur Songsterr et tu les décomposes lentement. Structure Songsterr : Intro, 3 couplets, Guitar Solo.",
+  note: "Objectif : la version fidèle. L'appli est ton PLAN ; ta partition, c'est ton fichier Guitar Pro (I need you tonight.gpx) ou Songsterr. Je ne recopie pas la tablature. D'après ton fichier : tempo du disque ~98 bpm, accordage standard, arrangement à 4 guitares (la partie à suivre est Git 1). Les tabs ci-dessous sont des repères simplifiés de ma main pour démarrer chaque section ; les notes EXACTES (surtout le solo), tu les lis sur ta partition et tu les décomposes lentement.",
   etapes: [
     {
       id: 1,
       titre: "Le socle : la tonique la + le groove",
-      tempo: "45-65 bpm",
-      description: "Avant les notes, le placement. Joue juste la fondamentale la en noires, pile sur le clic, en boucle. Scotché au tempo, comme au drum.",
+      tempo: "45-98 bpm",
+      description: "Avant les notes, le placement. Joue juste la fondamentale la en noires, pile sur le clic, en boucle. Scotché au tempo, comme au drum. Tempo du disque : ~98 bpm.",
       tab: ["E|--5--5--5--5--|  (la = corde de mi grave, case 5)"],
-      valideQuand: "12 mesures d'affilée parfaitement en place, sans accélérer.",
+      valideQuand: "12 mesures d'affilée parfaitement en place à 98 bpm, sans accélérer.",
       prereqs: ["echauffement", "shuffle"],
-      niveaux: [{ nom: "Très lent", tempo: 45 }, { nom: "En place", tempo: 55 }, { nom: "À tempo", tempo: 65 }]
+      niveaux: [{ nom: "Très lent", tempo: 45 }, { nom: "En place", tempo: 65 }, { nom: "À tempo", tempo: 98 }]
     },
     {
       id: 2,
       titre: "L'intro / le riff",
-      tempo: "45-75 bpm",
-      description: "La partie d'intro. Notes exactes : Songsterr, section Intro, à décomposer lentement. Ci-dessous, un repère simplifié en penta de la mineur (le 7b est ton bend money de la routine).",
+      tempo: "45-98 bpm",
+      description: "La partie d'intro (Git 1). Notes exactes : ta partition Guitar Pro / Songsterr, à décomposer lentement. Ci-dessous, un repère simplifié en penta de la mineur (le 7b est ton bend money de la routine).",
       tab: [
         "e|-------------------------|",
         "G|--7b----7--5-------------|",
@@ -576,26 +576,26 @@ const MORCEAU = {
       ],
       valideQuand: "La partie d'intro propre et en place, bend juste, calée sur Songsterr.",
       prereqs: ["pentatonique", "bends"],
-      niveaux: [{ nom: "Découverte", tempo: 45 }, { nom: "Propre", tempo: 60 }, { nom: "À tempo", tempo: 75 }]
+      niveaux: [{ nom: "Découverte", tempo: 50 }, { nom: "Propre", tempo: 75 }, { nom: "À tempo", tempo: 98 }]
     },
     {
       id: 3,
       titre: "Les couplets : la grille d'accords",
-      tempo: "50-70 bpm",
-      description: "Les 3 couplets tournent sur les mêmes accords. Am, G, D, C, E7. Lis l'ordre exact et le rythme sur Songsterr, joue-les sobrement, une frappe nette par temps.",
+      tempo: "50-98 bpm",
+      description: "Les 3 couplets tournent sur les mêmes accords. Am, G, D, C, E7. Lis l'ordre exact et le rythme sur ta partition, joue-les sobrement, une frappe nette par temps.",
       tab: [
         "Am     G      D      C      E7",
         "x02210 320003 xx0232 x32010 020100"
       ],
       valideQuand: "Tu enchaînes la grille des couplets sans casser le tempo lent.",
       prereqs: ["accords", "echauffement"],
-      niveaux: [{ nom: "Pose des accords", tempo: 50 }, { nom: "Enchaîné", tempo: 60 }, { nom: "À tempo", tempo: 70 }]
+      niveaux: [{ nom: "Pose des accords", tempo: 55 }, { nom: "Enchaîné", tempo: 75 }, { nom: "À tempo", tempo: 98 }]
     },
     {
       id: 4,
       titre: "Le solo",
-      tempo: "40-70 bpm",
-      description: "La version fidèle : lis le solo mesure par mesure sur Songsterr (section Guitar Solo) et décompose-le très lentement, un bout à la fois. Repère ci-dessous : la penta de la mineur avec bends/vibrato, ton terrain pour l'apprivoiser avant de coller au disque.",
+      tempo: "40-98 bpm",
+      description: "La version fidèle : lis le solo mesure par mesure sur ta partition Guitar Pro (piste Git 1) et décompose-le très lentement, un bout à la fois. Repère ci-dessous : la penta de la mineur avec bends/vibrato, ton terrain pour l'apprivoiser avant de coller au disque.",
       tab: [
         "e|-------------------------------|",
         "B|--8b~~~----8--5----------------|",
@@ -603,17 +603,17 @@ const MORCEAU = {
       ],
       valideQuand: "Le solo (ou sa 1re phrase) en place, bends justes, calé sur Songsterr.",
       prereqs: ["pentatonique", "bends", "accords"],
-      niveaux: [{ nom: "1re phrase, lent", tempo: 40 }, { nom: "Avec bends", tempo: 55 }, { nom: "À tempo", tempo: 70 }]
+      niveaux: [{ nom: "1re phrase, lent", tempo: 50 }, { nom: "Avec bends", tempo: 75 }, { nom: "À tempo", tempo: 98 }]
     },
     {
       id: 5,
       titre: "Le morceau complet",
-      tempo: "tempo du disque",
-      description: "Enchaîner intro → 3 couplets → solo → fin, en lisant Songsterr, en place, sur toute une boucle. C'est le 100%, la version fidèle.",
-      tab: ["Enchaîne tout, une boucle entière sans t'arrêter, en suivant Songsterr."],
-      valideQuand: "Un tour complet convaincant et en place, fidèle à la partition.",
+      tempo: "jusqu'à ~98 bpm",
+      description: "Enchaîner intro → 3 couplets → solo → fin, en lisant ta partition, en place, sur toute une boucle. C'est le 100%, la version fidèle au tempo du disque (~98 bpm).",
+      tab: ["Enchaîne tout, une boucle entière sans t'arrêter, en suivant ta partition."],
+      valideQuand: "Un tour complet convaincant et en place à ~98 bpm, fidèle à la partition.",
       prereqs: ["echauffement", "picking", "pentatonique", "bends", "shuffle", "accords", "morceau"],
-      niveaux: [{ nom: "Au ralenti", tempo: 50 }, { nom: "Sans s'arrêter", tempo: 60 }, { nom: "Tempo disque", tempo: 70 }]
+      niveaux: [{ nom: "Au ralenti", tempo: 65 }, { nom: "Sans s'arrêter", tempo: 85 }, { nom: "Tempo disque", tempo: 98 }]
     }
   ]
 };
