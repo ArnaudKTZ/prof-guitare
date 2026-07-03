@@ -446,7 +446,7 @@ async function initAlpha() {
   await chargeAlphaLib();
   alphaApi = new alphaTab.AlphaTabApi(document.getElementById('alphatab'), {
     core: { fontDirectory: ALPHATAB_BASE + 'font/' },
-    display: { scale: 0.8 },
+    display: { scale: 0.8, staveProfile: alphaTab.StaveProfile.Tab },
     player: {
       enablePlayer: true,
       enableCursor: true,
@@ -477,7 +477,37 @@ function remplirPistes(score) {
   let def = score.tracks.findIndex(t => /git/i.test(t.name || ''));
   if (def < 0) def = 0;
   sel.value = def;
-  alphaApi.renderTracks([score.tracks[def]]);
+  alphaApi.renderTracks(score.tracks);
+  construireMixer(score);
+}
+
+// Mixer multi-pistes : mute/solo/volume par piste, pour isoler ou couper un instrument à l'écoute.
+function construireMixer(score) {
+  const cont = document.getElementById('pt-mixer');
+  if (!cont || !score) return;
+  cont.innerHTML = score.tracks.map((t, i) => `
+    <div class="mixer-row">
+      <span class="mixer-nom">${t.name || ('Piste ' + (i + 1))}</span>
+      <button class="mixer-btn" data-mute="${i}" title="Couper cette piste">🔇</button>
+      <button class="mixer-btn" data-solo="${i}" title="N'entendre que cette piste">🎯</button>
+      <input type="range" class="mixer-vol" data-vol="${i}" min="0" max="16" value="16">
+    </div>`).join('');
+  cont.querySelectorAll('[data-mute]').forEach(b => b.addEventListener('click', () => {
+    const i = parseInt(b.dataset.mute, 10);
+    const actif = !b.classList.contains('actif');
+    b.classList.toggle('actif', actif);
+    alphaApi.changeTrackMute([score.tracks[i]], actif);
+  }));
+  cont.querySelectorAll('[data-solo]').forEach(b => b.addEventListener('click', () => {
+    const i = parseInt(b.dataset.solo, 10);
+    const actif = !b.classList.contains('actif');
+    b.classList.toggle('actif', actif);
+    alphaApi.changeTrackSolo([score.tracks[i]], actif);
+  }));
+  cont.querySelectorAll('[data-vol]').forEach(s => s.addEventListener('input', e => {
+    const i = parseInt(s.dataset.vol, 10);
+    alphaApi.changeTrackVolume([score.tracks[i]], parseInt(e.target.value, 10) / 16);
+  }));
 }
 
 function brancherControlesPartition() {
@@ -485,8 +515,12 @@ function brancherControlesPartition() {
   brancherControlesPartition.fait = true;
   document.getElementById('pt-play').addEventListener('click', () => alphaApi && alphaApi.playPause());
   document.getElementById('pt-stop').addEventListener('click', () => alphaApi && alphaApi.stop());
-  document.getElementById('pt-piste').addEventListener('change', e => {
-    if (alphaApi && alphaApi.score) { alphaApi.renderTracks([alphaApi.score.tracks[parseInt(e.target.value, 10)]]); afficherPlan(); }
+  document.getElementById('pt-piste').addEventListener('change', () => afficherPlan());
+  document.getElementById('pt-notation').addEventListener('change', e => {
+    if (!alphaApi) return;
+    alphaApi.settings.display.staveProfile = e.target.checked ? alphaTab.StaveProfile.ScoreTab : alphaTab.StaveProfile.Tab;
+    alphaApi.updateSettings();
+    alphaApi.render();
   });
   document.getElementById('pt-vitesse').addEventListener('input', e => {
     const v = parseInt(e.target.value, 10);
@@ -717,11 +751,13 @@ function renderPartition() {
           <button class="btn ecouter" id="pt-play">▶ Lecture</button>
           <button class="btn metro-exo" id="pt-stop">⏹ Stop</button>
         </div>
-        <div class="info-ligne"><span class="k">Piste</span><span class="v"><select id="pt-piste"></select></span></div>
+        <div class="info-ligne"><span class="k">Piste analysée</span><span class="v"><select id="pt-piste"></select></span></div>
         <div class="info-ligne"><span class="k">Vitesse</span><span class="v"><b id="pt-vitesse-val">100%</b></span></div>
         <input type="range" id="pt-vitesse" min="25" max="100" step="5" value="100" style="width:100%;">
         <label class="astuce" style="display:block;margin-top:8px;"><input type="checkbox" id="pt-metro"> Métronome pendant la lecture</label>
         <label class="astuce" style="display:block;"><input type="checkbox" id="pt-loop"> Boucler la sélection</label>
+        <label class="astuce" style="display:block;"><input type="checkbox" id="pt-notation"> Notation standard + tab</label>
+        <div id="pt-mixer" class="mixer"></div>
       </div>
     </div>
     <div id="alphatab-viewport"><div id="alphatab"></div></div>
