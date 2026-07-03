@@ -354,6 +354,16 @@ function renderCursus() {
       return;
     }
 
+    const nb = m.niveaux.length;
+    const lvl = Math.max(0, Math.min(LS.get('niveau-cursus-' + m.id, 0), nb - 1));
+    const n = m.niveaux[lvl];
+    const navNiv = `
+      <div class="niveau-nav">
+        <button class="niv-btn" data-cniv-prev="${m.id}" ${lvl === 0 ? 'disabled' : ''}>◀</button>
+        <span class="niv-label">Palier ${lvl + 1}/${nb} · ${n.nom}</span>
+        <button class="niv-btn" data-cniv-next="${m.id}" ${lvl === nb - 1 ? 'disabled' : ''}>▶</button>
+      </div>`;
+
     html += `
       <div class="carte">
         <div class="etape ${fait ? 'faite' : ''}">
@@ -364,14 +374,16 @@ function renderCursus() {
         </div>
         <span class="pill duree">${m.categorie}</span>
         <p class="but">${m.but}</p>
+        ${navNiv}
+        <p class="but">${n.but}</p>
         <div class="label">Tablature</div>
-        <pre class="tab">${m.tab.join('\n')}</pre>
-        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${m.tempoDepart} ${m.unite}</span></span></div>
-        <div class="info-ligne"><span class="k">Focus</span><span class="v">${m.focus}</span></div>
-        <div class="info-ligne"><span class="k">Palier</span><span class="v">${m.palier}</span></div>
+        <pre class="tab">${n.tab.join('\n')}</pre>
+        <div class="info-ligne"><span class="k">Départ</span><span class="v"><span class="tempo-badge">${n.tempoDepart} ${n.unite}</span></span></div>
+        <div class="info-ligne"><span class="k">Focus</span><span class="v">${n.focus}</span></div>
+        <div class="info-ligne"><span class="k">Palier</span><span class="v">${n.palier}</span></div>
         <div class="actions-exo">
-          ${m.audio ? `<button class="btn ecouter" data-audio-cursus="${m.id}">▶ Écouter</button>` : ''}
-          <button class="btn metro-exo" data-metro="${m.tempoDepart}">🥁 Métro ${m.tempoDepart}</button>
+          ${n.audio ? `<button class="btn ecouter" data-audio-cursus="${m.id}-${lvl}">▶ Écouter</button>` : ''}
+          ${n.tempoDepart ? `<button class="btn metro-exo" data-metro="${n.tempoDepart}">🥁 Métro ${n.tempoDepart}</button>` : ''}
         </div>
         <button class="btn ${fait ? 'annuler' : 'valider'}" data-cursus="${m.id}">
           ${fait ? 'Annuler la validation' : 'Valider ce module ✓'}
@@ -384,12 +396,26 @@ function renderCursus() {
     btn.addEventListener('click', () => toggleModuleCursus(btn.dataset.cursus));
   });
   el.querySelectorAll('button[data-audio-cursus]').forEach(btn => {
-    const m = CURSUS.modules.find(x => x.id === btn.dataset.audioCursus);
-    btn.addEventListener('click', () => AudioPlayer.toggle(m.audio, btn));
+    const [mid, lvl] = btn.dataset.audioCursus.split('-');
+    const m = CURSUS.modules.find(x => x.id === mid);
+    btn.addEventListener('click', () => AudioPlayer.toggle(m.niveaux[parseInt(lvl, 10)].audio, btn));
   });
   el.querySelectorAll('button[data-metro]').forEach(btn => {
     btn.addEventListener('click', () => toggleMetroExo(parseInt(btn.dataset.metro, 10)));
   });
+  el.querySelectorAll('button[data-cniv-prev]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveauCursus(btn.dataset.cnivPrev, -1));
+  });
+  el.querySelectorAll('button[data-cniv-next]').forEach(btn => {
+    btn.addEventListener('click', () => changerNiveauCursus(btn.dataset.cnivNext, 1));
+  });
+}
+
+function changerNiveauCursus(id, delta) {
+  const m = CURSUS.modules.find(x => x.id === id);
+  const lvl = Math.max(0, Math.min(LS.get('niveau-cursus-' + id, 0) + delta, m.niveaux.length - 1));
+  LS.set('niveau-cursus-' + id, lvl);
+  renderCursus();
 }
 
 function toggleModuleCursus(id) {
