@@ -410,7 +410,7 @@ document.getElementById('mini-plus').addEventListener('click', () => Metro.setBp
 // La partition reste sur l'appareil (localStorage), jamais publiée sur le serveur.
 const ALPHATAB_VER = '1.8.3';
 const ALPHATAB_BASE = `https://cdn.jsdelivr.net/npm/@coderline/alphatab@${ALPHATAB_VER}/dist/`;
-let alphaApi = null, alphaLoading = null, partitionChargee = false;
+let alphaApi = null, alphaLoading = null, partitionChargee = false, enLecture = false, sectionActive = null;
 
 function partitionStatus(msg) {
   const el = document.getElementById('partition-status');
@@ -459,6 +459,7 @@ async function initAlpha() {
   alphaApi.renderFinished.on(() => partitionStatus(''));
   alphaApi.scoreLoaded.on(score => { remplirPistes(score); afficherPlan(); });
   alphaApi.playerStateChanged.on(e => {
+    enLecture = e.state === 1;
     const b = document.getElementById('pt-play');
     if (b) b.textContent = e.state === 1 ? '⏸ Pause' : '▶ Lecture';
   });
@@ -514,7 +515,7 @@ function brancherControlesPartition() {
   if (brancherControlesPartition.fait) return;
   brancherControlesPartition.fait = true;
   document.getElementById('pt-play').addEventListener('click', () => alphaApi && alphaApi.playPause());
-  document.getElementById('pt-stop').addEventListener('click', () => alphaApi && alphaApi.stop());
+  document.getElementById('pt-stop').addEventListener('click', () => { sectionActive = null; if (alphaApi) alphaApi.stop(); });
   document.getElementById('pt-piste').addEventListener('change', () => afficherPlan());
   document.getElementById('pt-notation').addEventListener('change', e => {
     if (!alphaApi) return;
@@ -686,18 +687,21 @@ function afficherPlan() {
           <h4>${emoji} Mesures ${s.from + 1}-${s.to + 1} · ${s.type}</h4></div>
         ${s.tags.length ? `<div style="margin:6px 0;">${s.tags.map(t => `<span class="pill duree">${t}</span> `).join('')}</div>` : ''}
         <p class="astuce">${s.coaching}</p>
-        <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map(t => `<span class="tempo-badge" style="margin-left:4px">${t}</span>`).join('')}</span></div>
+        <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map((t, ti) => `<button type="button" class="tempo-badge${ti === 0 ? ' actif' : ''}" data-idx="${idx}" data-ti="${ti}" style="margin-left:4px">${t}</button>`).join('')}</span></div>
         <div class="actions-exo">
-          <button class="btn ecouter" data-loop="${idx}">▶ Boucler (lent)</button>
           <button class="btn ${fait ? 'annuler' : 'valider'}" data-plan="${idx}">${fait ? 'Annuler' : 'Validée ✓'}</button>
         </div>
       </div>`;
   });
   cont.innerHTML = html;
 
-  document.getElementById('plan-stop').addEventListener('click', arreterBoucle);
-  cont.querySelectorAll('button[data-loop]').forEach(b =>
-    b.addEventListener('click', () => travaillerSection(sections[parseInt(b.dataset.loop, 10)])));
+  document.getElementById('plan-stop').addEventListener('click', () => { sectionActive = null; arreterBoucle(); });
+  cont.querySelectorAll('button.tempo-badge').forEach(b => b.addEventListener('click', () => {
+    const idx = parseInt(b.dataset.idx, 10), ti = parseInt(b.dataset.ti, 10);
+    b.parentElement.querySelectorAll('.tempo-badge').forEach(x => x.classList.remove('actif'));
+    b.classList.add('actif');
+    choisirTempoSection(sections[idx], idx, sections[idx].tempos[ti]);
+  }));
   cont.querySelectorAll('button[data-plan]').forEach(b =>
     b.addEventListener('click', () => { togglePlanSection(parseInt(b.dataset.plan, 10), sections.length); }));
 }
@@ -710,20 +714,25 @@ function togglePlanSection(idx, total) {
   afficherPlan();
 }
 
-function travaillerSection(s) {
+// Sélection d'un des 3 tempos d'une section : change la vitesse de lecture à la volée si la
+// section est déjà en cours de boucle, sinon lance la boucle directement à ce tempo.
+function choisirTempoSection(s, idx, tempoVal) {
   if (!alphaApi || !alphaApi.tickCache) return;
-  const tc = alphaApi.tickCache;
-  const range = new alphaTab.synth.PlaybackRange();
-  range.startTick = tc.masterBars[s.from].start;
-  range.endTick = tc.masterBars[s.to].end;
-  alphaApi.playbackRange = range;
-  alphaApi.isLooping = true;
-  const pct = Math.round(s.tempos[0] / (alphaApi.score.tempo || 100) * 100);
+  if (sectionActive !== idx) {
+    const tc = alphaApi.tickCache;
+    const range = new alphaTab.synth.PlaybackRange();
+    range.startTick = tc.masterBars[s.from].start;
+    range.endTick = tc.masterBars[s.to].end;
+    alphaApi.playbackRange = range;
+    alphaApi.isLooping = true;
+    const loopCb = document.getElementById('pt-loop'); if (loopCb) loopCb.checked = true;
+    sectionActive = idx;
+  }
+  const pct = Math.min(100, Math.max(25, Math.round(tempoVal / (alphaApi.score.tempo || 100) * 100)));
   alphaApi.playbackSpeed = pct / 100;
   const slider = document.getElementById('pt-vitesse');
-  if (slider) { slider.value = Math.min(100, Math.max(25, pct)); document.getElementById('pt-vitesse-val').textContent = slider.value + '%'; }
-  const loopCb = document.getElementById('pt-loop'); if (loopCb) loopCb.checked = true;
-  alphaApi.playPause();
+  if (slider) { slider.value = pct; document.getElementById('pt-vitesse-val').textContent = pct + '%'; }
+  if (!enLecture) alphaApi.playPause();
 }
 
 function arreterBoucle() {

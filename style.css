@@ -94,6 +94,10 @@ pre.tab {
   display: inline-block; background: var(--accent-2); color: #fff;
   font-weight: 700; padding: 4px 10px; border-radius: 8px; font-size: 13px;
 }
+button.tempo-badge {
+  border: 2px solid transparent; font-family: inherit; cursor: pointer; opacity: 0.6;
+}
+button.tempo-badge.actif { opacity: 1; border-color: #fff; }
 
 /* Progression morceau */
 .barre { height: 12px; background: var(--bg-carte-2); border-radius: 20px; overflow: hidden; margin: 8px 0 4px; }
