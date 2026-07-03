@@ -449,6 +449,8 @@ async function initAlpha() {
     display: { scale: 0.8 },
     player: {
       enablePlayer: true,
+      enableCursor: true,
+      enableAnimatedBeatCursor: true,
       soundFont: ALPHATAB_BASE + 'soundfont/sonivox.sf2',
       scrollElement: document.getElementById('alphatab-viewport')
     }
