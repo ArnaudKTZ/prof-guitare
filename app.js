@@ -531,39 +531,94 @@ function ouvrirPartition() {
 }
 
 // Génère un plan d'entraînement à partir de la partition analysée (métadonnées seulement).
+// Le prof : découpe adaptatif (solos plus fins), techniques détectées, coaching par section.
 function genererPlan(trackIndex) {
   if (!alphaApi || !alphaApi.score) return { tempo: 100, sections: [] };
   const score = alphaApi.score;
   const tempo = score.tempo || 100;
   const bars = score.tracks[trackIndex].staves[0].bars;
   const N = bars.length;
-  const stat = bars.map(bar => {
-    let notes = 0, bends = 0, chords = 0, allRest = true;
+  const bstat = bars.map(bar => {
+    let notes = 0, bends = 0, slides = 0, hammers = 0, vib = 0, chords = 0, palm = 0, maxDur = 0, trip = false, fmin = 99, fmax = 0;
     (bar.voices || []).forEach(v => (v.beats || []).forEach(b => {
+      if (b.isPalmMute) palm++;
+      if (b.tupletNumerator > 1) trip = true;
+      if (b.duration > maxDur) maxDur = b.duration;
       const ns = b.notes || [];
-      if (!b.isRest && ns.length) allRest = false;
       if (ns.length > 1) chords++;
-      ns.forEach(n => { notes++; if (n.hasBend || n.bendType) bends++; });
+      ns.forEach(n => {
+        notes++;
+        if (n.bendType) bends++;
+        if (n.slideInType || n.slideOutType) slides++;
+        if (n.isHammerPullOrigin) hammers++;
+        if (n.vibrato) vib++;
+        if (typeof n.fret === 'number') { fmin = Math.min(fmin, n.fret); fmax = Math.max(fmax, n.fret); }
+      });
     }));
-    return { notes, bends, chords, allRest };
+    return { notes, bends, slides, hammers, vib, chords, palm, maxDur, trip, fmin, fmax };
   });
-  const CHUNK = 4;
+  const dur = i => bstat[i];
+  const hard = i => dur(i).bends > 0 || dur(i).maxDur >= 16 || dur(i).notes >= 6;
   const sections = [];
-  for (let i = 0; i < N; i += CHUNK) {
-    const from = i, to = Math.min(i + CHUNK - 1, N - 1);
-    let notes = 0, bends = 0, chords = 0;
-    for (let j = from; j <= to; j++) { notes += stat[j].notes; bends += stat[j].bends; chords += stat[j].chords; }
-    if (notes === 0) continue;
-    const nbBars = to - from + 1;
-    const dens = notes / nbBars;
+  let i = 0;
+  while (i < N) {
+    const size = hard(i) ? 2 : 4;
+    const from = i, to = Math.min(i + size - 1, N - 1);
+    const a = { notes: 0, bends: 0, slides: 0, hammers: 0, vib: 0, chords: 0, palm: 0, maxDur: 0, trip: false, fmin: 99, fmax: 0 };
+    for (let j = from; j <= to; j++) {
+      const s = bstat[j];
+      a.notes += s.notes; a.bends += s.bends; a.slides += s.slides; a.hammers += s.hammers; a.vib += s.vib;
+      a.chords += s.chords; a.palm += s.palm; a.maxDur = Math.max(a.maxDur, s.maxDur); a.trip = a.trip || s.trip;
+      a.fmin = Math.min(a.fmin, s.fmin); a.fmax = Math.max(a.fmax, s.fmax);
+    }
+    i = to + 1;
+    if (a.notes === 0) continue;
+    const dens = a.notes / (to - from + 1);
     let type = 'Riff';
-    if (bends >= 2 || dens >= 6) type = 'Solo / lead';
-    else if (chords > 0 && dens < 4) type = 'Rythmique';
+    if (a.bends >= 1 && dens >= 4) type = 'Solo / lead';
+    else if (a.chords > 0 && dens < 4) type = 'Rythmique';
+    else if (dens >= 6) type = 'Solo / lead';
     const base = type === 'Solo / lead' ? 0.4 : 0.5;
     const tempos = [Math.round(tempo * base), Math.round(tempo * 0.7), tempo];
-    sections.push({ from, to, type, notes, bends, tempos });
+    const tags = [];
+    if (a.bends) tags.push(a.bends + ' bend' + (a.bends > 1 ? 's' : ''));
+    if (a.vib) tags.push('vibrato');
+    if (a.slides) tags.push('slide' + (a.slides > 1 ? 's' : ''));
+    if (a.hammers) tags.push('hammer/pull');
+    if (a.chords) tags.push('accords');
+    if (a.palm) tags.push('palm mute');
+    if (a.maxDur >= 16) tags.push('doubles-croches');
+    if (a.trip) tags.push('triolets');
+    const prereqs = [];
+    if (a.bends || a.vib) prereqs.push('Bends & vibrato');
+    if (a.hammers || a.slides) prereqs.push('Legato');
+    if (a.maxDur >= 16 || dens >= 6) prereqs.push('Alternate picking');
+    if (type === 'Solo / lead') prereqs.push('Pentatonique la mineur');
+    if (a.chords) prereqs.push('Accords & changements');
+    if (a.palm) prereqs.push('Shuffle blues');
+    const coaching = coachingSection(type, a, tempos, [...new Set(prereqs)], tempo);
+    sections.push({ from, to, type, tempos, tags, coaching });
   }
   return { tempo, sections };
+}
+
+function coachingSection(type, a, tempos, prereqs, tempo) {
+  const pos = (a.fmin <= a.fmax && a.fmax > 0) ? `Cases ${a.fmin}-${a.fmax}. ` : '';
+  let quoi = '';
+  if (a.bends) quoi += `${a.bends} bend${a.bends > 1 ? 's' : ''} à faire tomber juste. `;
+  if (a.maxDur >= 16) quoi += 'Passage rapide (doubles-croches). ';
+  if (a.slides) quoi += 'Des slides pour lier les notes. ';
+  if (a.chords) quoi += 'Des accords à poser nets. ';
+  if (a.palm) quoi += 'Palm mute (la paume étouffe). ';
+  let methode;
+  if (type === 'Solo / lead')
+    methode = `Boucle à ${tempos[0]} bpm : repère d'abord les notes sans le rythme, puis cale-les au clic. Les bends justes AVANT la vitesse. +5 bpm quand c'est propre, jusqu'à ${tempo}.`;
+  else if (type === 'Rythmique')
+    methode = `Pose les accords nets, anticipe les changements d'un temps. Une frappe par temps à ${tempos[0]} bpm, puis le motif rythmique, puis monte.`;
+  else
+    methode = `Mémorise le motif lentement à ${tempos[0]} bpm, mains synchronisées au clic, puis accélère par paliers jusqu'à ${tempo}.`;
+  const prep = prereqs.length ? ` Échauffe-toi avec : ${prereqs.join(', ')}.` : '';
+  return pos + quoi + methode + prep;
 }
 
 function planKey() {
@@ -583,7 +638,7 @@ function afficherPlan() {
   let html = `
     <div class="carte">
       <h3>Plan d'entraînement de ce morceau 🎯</h3>
-      <p class="astuce">Généré depuis ta partition (piste affichée). ${sections.length} sections à ${tempo} bpm au final. Travaille chaque section en boucle lente, valide-la, monte le tempo.</p>
+      <p class="astuce">Ton prof a analysé la partition et l'a découpée en ${sections.length} exos (les solos plus finement). Chaque section : ce qu'elle contient, comment l'attaquer, et un bouton pour la jouer en boucle lente. Objectif final : ${tempo} bpm. Fais-les dans l'ordre, valide au fur et à mesure, de A à Z.</p>
       <div class="barre"><span style="width:${pct}%"></span></div>
       <div class="pct">${faits.length}/${sections.length} sections</div>
       <button class="btn ghost" id="plan-stop">⏹ Arrêter la boucle</button>
@@ -595,6 +650,8 @@ function afficherPlan() {
       <div class="carte plan-section ${fait ? 'faite' : ''}">
         <div class="tete"><div class="num">${fait ? '✓' : idx + 1}</div>
           <h4>${emoji} Mesures ${s.from + 1}-${s.to + 1} · ${s.type}</h4></div>
+        ${s.tags.length ? `<div style="margin:6px 0;">${s.tags.map(t => `<span class="pill duree">${t}</span> `).join('')}</div>` : ''}
+        <p class="astuce">${s.coaching}</p>
         <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map(t => `<span class="tempo-badge" style="margin-left:4px">${t}</span>`).join('')}</span></div>
         <div class="actions-exo">
           <button class="btn ecouter" data-loop="${idx}">▶ Boucler (lent)</button>
