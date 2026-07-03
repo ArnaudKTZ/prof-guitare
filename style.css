@@ -220,6 +220,19 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   border: 1px solid var(--bordure); border-radius: 8px; padding: 6px 8px; font-size: 13px;
 }
 #pt-vitesse { accent-color: var(--accent); }
+.mixer { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.mixer-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-carte-2); border: 1px solid var(--bordure); border-radius: 8px; padding: 6px 8px;
+}
+.mixer-nom { flex: 1; min-width: 0; font-size: 13px; color: var(--texte-doux); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mixer-btn {
+  border: 1px solid var(--bordure); background: var(--bg-carte); color: var(--texte-doux);
+  border-radius: 6px; padding: 4px 8px; font-size: 13px; cursor: pointer;
+}
+.mixer-btn[data-mute].actif { background: var(--accent-2); color: #1a1a1f; border-color: var(--accent-2); }
+.mixer-btn[data-solo].actif { background: var(--ok); color: #1a1a1f; border-color: var(--ok); }
+input.mixer-vol[type=range] { width: 70px; flex: 0 0 auto; accent-color: var(--accent); }
 /* Curseur de lecture alphaTab : barre rouge verticale + surlignage de la mesure */
 .at-cursor-bar { background: rgba(224, 164, 88, 0.18); }
 .at-cursor-beat { background: #e11d1d; width: 3px; }
