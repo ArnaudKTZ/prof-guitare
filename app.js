@@ -167,7 +167,7 @@ function renderRoutine() {
     });
   });
   el.querySelectorAll('button[data-metro]').forEach(btn => {
-    btn.addEventListener('click', () => Metro.startAt(parseInt(btn.dataset.metro, 10)));
+    btn.addEventListener('click', () => toggleMetroExo(parseInt(btn.dataset.metro, 10)));
   });
 }
 
@@ -287,7 +287,7 @@ function renderMorceau() {
     btn.addEventListener('click', () => AudioPlayer.toggle(AUDIO_ETAPE[btn.dataset.audioEtape], btn));
   });
   el.querySelectorAll('button[data-metro]').forEach(btn => {
-    btn.addEventListener('click', () => Metro.startAt(parseInt(btn.dataset.metro, 10)));
+    btn.addEventListener('click', () => toggleMetroExo(parseInt(btn.dataset.metro, 10)));
   });
   el.querySelectorAll('button[data-tniv-prev]').forEach(btn => {
     btn.addEventListener('click', () => changerNiveauEtape(parseInt(btn.dataset.tnivPrev, 10), -1));
@@ -365,10 +365,23 @@ const Metro = (() => {
     const mp = document.getElementById('mini-play');
     if (mb) mb.textContent = bpm;
     if (mp) { mp.textContent = running ? '⏸' : '▶'; mp.classList.toggle('on', running); }
+    // boutons "Métro X" sur chaque exo/étape : deviennent "Stop" quand c'est eux qui jouent
+    document.querySelectorAll('button.metro-exo[data-metro]').forEach(btn => {
+      const t = parseInt(btn.dataset.metro, 10);
+      const actif = running && bpm === t;
+      btn.textContent = actif ? `⏸ Stop ${t}` : `🥁 Métro ${t}`;
+      btn.classList.toggle('joue', actif);
+    });
   }
   return { start, stop, setBpm, startAt, get bpm() { return bpm; }, get running() { return running; },
            toggle() { running ? stop() : start(); } };
 })();
+
+// Bouton "Métro X" d'un exo : stoppe s'il est déjà celui qui joue, sinon (re)lance à ce tempo.
+function toggleMetroExo(tempo) {
+  if (Metro.running && Metro.bpm === tempo) Metro.stop();
+  else Metro.startAt(tempo);
+}
 
 function renderMetro() {
   const el = document.getElementById('vue-metronome');
