@@ -217,3 +217,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   border: 1px solid var(--bordure); border-radius: 8px; padding: 6px 8px; font-size: 13px;
 }
 #pt-vitesse { accent-color: var(--accent); }
+/* Curseur de lecture alphaTab : barre rouge verticale + surlignage de la mesure */
+.at-cursor-bar { background: rgba(224, 164, 88, 0.18); }
+.at-cursor-beat { background: #e11d1d; width: 3px; }
+.at-highlight * { fill: #e11d1d; stroke: #e11d1d; }
