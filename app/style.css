@@ -151,6 +151,7 @@ button.tempo-badge.actif { opacity: 1; border-color: #fff; }
 .actions-exo { display: flex; gap: 8px; margin-top: 10px; }
 .actions-exo .btn { margin-top: 0; }
 .btn.metro-exo { background: var(--bg-carte-2); color: var(--strat); border: 1px solid var(--strat); }
+.btn.metro-exo.joue { background: var(--strat); color: #10202f; border-color: var(--strat); }
 
 /* Barre métronome permanente */
 #mini-metro {
