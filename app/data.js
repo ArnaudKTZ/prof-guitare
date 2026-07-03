@@ -12,7 +12,7 @@ const ROUTINE = {
   titre: "Routine du jour",
   soustitre: "15-20 min de base, plus si tu veux. Monte les niveaux.",
   guitare: "Électro-acoustique (Strat pour Bends)",
-  tonalite: "Ré mineur",
+  tonalite: "La mineur",
   blocs: [
     {
       id: "echauffement",
@@ -138,29 +138,29 @@ const ROUTINE = {
     },
     {
       id: "pentatonique",
-      titre: "Pentatonique de ré mineur",
+      titre: "Pentatonique de la mineur",
       duree: "4-5 min",
       guitare: "Électro-acoustique",
       niveaux: [
         {
-          nom: "Position 1 (case 10)",
-          but: "Fluidité et mise en place sur la gamme du morceau.",
+          nom: "Position 1 (case 5)",
+          but: "Fluidité et mise en place sur la gamme du morceau (la mineur, case 5).",
           tab: [
-            "e|-------------------10-13-|",
-            "B|----------------10-13----|",
-            "G|-------------10-12--------|",
-            "D|--------10-12------------|",
-            "A|---10-12----------------|",
-            "E|10-13-------------------|"
+            "e|-----------------5-8-|",
+            "B|--------------5-8----|",
+            "G|-----------5-7-------|",
+            "D|--------5-7----------|",
+            "A|----5-7-------------|",
+            "E|5-8----------------|"
           ],
           tempoDepart: 70, unite: "bpm (croches)",
           palier: "Montée + descente propres à 110 bpm → niveau 2.",
           focus: "Chaque note calée, pas de bouillie sur les changements de corde.",
           audio: { bpm: 80, notes: [
-            {s:6,f:10},{s:6,f:13},{s:5,f:10},{s:5,f:12},{s:4,f:10},{s:4,f:12},
-            {s:3,f:10},{s:3,f:12},{s:2,f:10},{s:2,f:13},{s:1,f:10},{s:1,f:13},
-            {s:1,f:10},{s:2,f:13},{s:2,f:10},{s:3,f:12},{s:3,f:10},{s:4,f:12},
-            {s:4,f:10},{s:5,f:12},{s:5,f:10},{s:6,f:13},{s:6,f:10}
+            {s:6,f:5},{s:6,f:8},{s:5,f:5},{s:5,f:7},{s:4,f:5},{s:4,f:7},
+            {s:3,f:5},{s:3,f:7},{s:2,f:5},{s:2,f:8},{s:1,f:5},{s:1,f:8},
+            {s:1,f:5},{s:2,f:8},{s:2,f:5},{s:3,f:7},{s:3,f:5},{s:4,f:7},
+            {s:4,f:5},{s:5,f:7},{s:5,f:5},{s:6,f:8},{s:6,f:5}
           ]}
         },
         {
@@ -175,26 +175,26 @@ const ROUTINE = {
           palier: "Séquence fluide à 95 bpm → niveau 3.",
           focus: "Ne t'emmêle pas les pinceaux : c'est un exo de cerveau autant que de doigts.",
           audio: { bpm: 80, notes: [
-            {s:6,f:10},{s:6,f:13},{s:5,f:10}, {s:6,f:13},{s:5,f:10},{s:5,f:12},
-            {s:5,f:10},{s:5,f:12},{s:4,f:10}, {s:5,f:12},{s:4,f:10},{s:4,f:12},
-            {s:4,f:10},{s:4,f:12},{s:3,f:10}, {s:4,f:12},{s:3,f:10},{s:3,f:12},
-            {s:3,f:10},{s:3,f:12},{s:2,f:10}, {s:3,f:12},{s:2,f:10},{s:2,f:13}
+            {s:6,f:5},{s:6,f:8},{s:5,f:5}, {s:6,f:8},{s:5,f:5},{s:5,f:7},
+            {s:5,f:5},{s:5,f:7},{s:4,f:5}, {s:5,f:7},{s:4,f:5},{s:4,f:7},
+            {s:4,f:5},{s:4,f:7},{s:3,f:5}, {s:4,f:7},{s:3,f:5},{s:3,f:7},
+            {s:3,f:5},{s:3,f:7},{s:2,f:5}, {s:3,f:7},{s:2,f:5},{s:2,f:8}
           ]}
         },
         {
           nom: "Toute la penta sur une corde",
           but: "Jeu horizontal : la même gamme le long du manche, pas juste en box.",
           tab: [
-            "Ré mineur pentatonique sur la corde de mi aigu :",
-            "e|-10-13-15-17-20-22-|  (ré fa sol la do ré)",
+            "La mineur pentatonique sur la corde de mi aigu :",
+            "e|-5-8-10-12-15-17-|  (la do ré mi sol la)",
             "Monte et redescends. Pareil sur la corde de si, puis de sol."
           ],
           tempoDepart: 60, unite: "bpm (croches)",
           palier: "Propre et juste sur 3 cordes différentes → niveau 4.",
-          focus: "Les slides relient les notes. Repère le ré (10 et 22), c'est ta maison.",
+          focus: "Les slides relient les notes. Repère le la (5 et 17), c'est ta maison.",
           audio: { bpm: 80, notes: [
-            {s:1,f:10},{s:1,f:13},{s:1,f:15},{s:1,f:17},{s:1,f:20},{s:1,f:22},
-            {s:1,f:20},{s:1,f:17},{s:1,f:15},{s:1,f:13},{s:1,f:10}
+            {s:1,f:5},{s:1,f:8},{s:1,f:10},{s:1,f:12},{s:1,f:15},{s:1,f:17},
+            {s:1,f:15},{s:1,f:12},{s:1,f:10},{s:1,f:8},{s:1,f:5}
           ]}
         },
         {
@@ -209,10 +209,10 @@ const ROUTINE = {
           palier: "Triolets carrés à 80 bpm = ta penta est prête pour l'impro.",
           focus: "Le point fort du batteur : sentir le 3 sans se caler sur le 4. Régale-toi.",
           audio: { bpm: 70, notes: [
-            {s:6,f:10,d:0.34},{s:6,f:13,d:0.33},{s:5,f:10,d:0.33},
-            {s:5,f:12,d:0.34},{s:4,f:10,d:0.33},{s:4,f:12,d:0.33},
-            {s:3,f:10,d:0.34},{s:3,f:12,d:0.33},{s:2,f:10,d:0.33},
-            {s:2,f:13,d:0.34},{s:1,f:10,d:0.33},{s:1,f:13,d:0.33}
+            {s:6,f:5,d:0.34},{s:6,f:8,d:0.33},{s:5,f:5,d:0.33},
+            {s:5,f:7,d:0.34},{s:4,f:5,d:0.33},{s:4,f:7,d:0.33},
+            {s:3,f:5,d:0.34},{s:3,f:7,d:0.33},{s:2,f:5,d:0.33},
+            {s:2,f:8,d:0.34},{s:1,f:5,d:0.33},{s:1,f:8,d:0.33}
           ]}
         }
       ]
@@ -227,54 +227,54 @@ const ROUTINE = {
           nom: "Bend d'un ton + référence",
           but: "Chantier n°2 : tomber juste. On joue la note cible, puis on bende jusqu'à elle.",
           tab: [
-            "G|--14-------12b--   (14 = cible LA, bende la 12 pour l'atteindre)",
-            "B|--15-------13b--   (15 = cible, bende la 13)",
+            "G|--9-------7b--   (9 = cible MI, bende la 7 pour l'atteindre)",
+            "B|--10------8b--   (10 = cible, bende la 8)",
             "Vérifie à chaque fois : même hauteur exactement."
           ],
           tempoDepart: 60, unite: "bpm",
           palier: "10 bends justes d'affilée sur les deux cordes → niveau 2.",
           focus: "Pousse avec le poignet, pas juste le doigt. Plusieurs doigts derrière pour la force.",
           audio: { bpm: 60, notes: [
-            {s:3,f:14,d:1},{r:true,d:0.4},{s:3,f:12,bend:14,d:1.6},{r:true,d:0.4},
-            {s:2,f:15,d:1},{r:true,d:0.4},{s:2,f:13,bend:15,d:1.6}
+            {s:3,f:9,d:1},{r:true,d:0.4},{s:3,f:7,bend:9,d:1.6},{r:true,d:0.4},
+            {s:2,f:10,d:1},{r:true,d:0.4},{s:2,f:8,bend:10,d:1.6}
           ]}
         },
         {
           nom: "Demi-ton, ton et demi, release",
           but: "Contrôler la hauteur du bend, et le redescendre en gardant la justesse (release).",
           tab: [
-            "Demi-ton :   G|--12b(1/2)--  (monte d'une case)",
-            "Ton et demi : G|--12b(1.5)--  (monte de 3 cases, dur !)",
+            "Demi-ton :   G|--7b(1/2)--  (monte d'une case)",
+            "Ton et demi : G|--7b(1.5)--  (monte de 3 cases, dur !)",
             "Release : bende, puis redescends lentement pile sur la note de départ."
           ],
           tempoDepart: 55, unite: "bpm",
           palier: "Demi-ton, ton, ton et demi justes à l'oreille → niveau 3.",
           focus: "L'oreille commande, pas le doigt. Chante la note cible avant de bender.",
           audio: { bpm: 55, notes: [
-            {s:3,f:12,bend:13,d:1.4},{r:true,d:0.4},{s:3,f:12,bend:14,d:1.4},{r:true,d:0.4},
-            {s:3,f:12,bend:15,d:1.6}
+            {s:3,f:7,bend:8,d:1.4},{r:true,d:0.4},{s:3,f:7,bend:9,d:1.4},{r:true,d:0.4},
+            {s:3,f:7,bend:10,d:1.6}
           ]}
         },
         {
           nom: "Pré-bend & release",
           but: "Bender AVANT de jouer, puis relâcher : la note apparaît en descendant. Effet très blues.",
           tab: [
-            "Pré-bende la case 12 (sans jouer) jusqu'à la hauteur de 14,",
-            "PUIS joue, PUIS relâche lentement vers la vraie 12.",
-            "G|--(12→14 pré-bendé) joue, release vers 12--"
+            "Pré-bende la case 7 (sans jouer) jusqu'à la hauteur de 9,",
+            "PUIS joue, PUIS relâche lentement vers la vraie 7.",
+            "G|--(7→9 pré-bendé) joue, release vers 7--"
           ],
           tempoDepart: 55, unite: "bpm",
           palier: "Le release sonne juste et régulier → niveau 4.",
           focus: "Tout est dans la descente contrôlée. Ne lâche pas d'un coup.",
           audio: { bpm: 55, notes: [
-            {s:3,f:14,bend:12,d:2.4},{r:true,d:0.5},{s:2,f:15,bend:13,d:2.4}
+            {s:3,f:9,bend:7,d:2.4},{r:true,d:0.5},{s:2,f:10,bend:8,d:2.4}
           ]}
         },
         {
           nom: "Vibrato & vibrato sur bend",
           but: "Chantier n°3 : le vibrato, ce qui fait sonner pro une note tenue.",
           tab: [
-            "Vibrato : tiens la case 12 (sol) et fais de petits bends réguliers,",
+            "Vibrato : tiens la case 7 (corde de sol) et fais de petits bends réguliers,",
             "1 aller-retour par clic à 60 bpm, comme un bend rythmé.",
             "Niveau ultime : bende d'un ton, PUIS ajoute le vibrato sur la note bendée."
           ],
@@ -282,7 +282,7 @@ const ROUTINE = {
           palier: "Vibrato régulier et volontaire = tu as une vraie voix sur la guitare.",
           focus: "Régularité avant vitesse. C'est un vibrato de batteur : métronomique.",
           audio: { bpm: 60, notes: [
-            {s:3,f:12,bend:14,d:3}
+            {s:3,f:7,bend:9,d:3}
           ]}
         }
       ]
@@ -297,52 +297,109 @@ const ROUTINE = {
           nom: "Le feel ternaire à vide",
           but: "Ton terrain de batteur. Installer le bounce shuffle (long-court) avant les notes.",
           tab: [
-            "Joue la corde de ré à vide en shuffle : LONG-court, LONG-court.",
-            "D|-D..d-D..d-D..d-D..d-|   (le 'D' sur le temps, le 'd' juste avant le suivant)",
+            "Joue la corde de la à vide en shuffle : LONG-court, LONG-court.",
+            "A|-A..a-A..a-A..a-A..a-|   (le 'A' sur le temps, le 'a' juste avant le suivant)",
             "Palm mute léger, main droite qui balance."
           ],
           tempoDepart: 65, unite: "bpm (feel ternaire)",
           palier: "Le bounce est naturel et scotché au clic → niveau 2.",
           focus: "Ne joue pas droit : c'est du ternaire. Tu connais ça mieux que personne.",
           audio: { bpm: 70, notes: [
-            {s:4,f:0,d:0.67},{s:4,f:0,d:0.33},{s:4,f:0,d:0.67},{s:4,f:0,d:0.33},
-            {s:4,f:0,d:0.67},{s:4,f:0,d:0.33},{s:4,f:0,d:0.67},{s:4,f:0,d:0.33}
+            {s:5,f:0,d:0.67},{s:5,f:0,d:0.33},{s:5,f:0,d:0.67},{s:5,f:0,d:0.33},
+            {s:5,f:0,d:0.67},{s:5,f:0,d:0.33},{s:5,f:0,d:0.67},{s:5,f:0,d:0.33}
           ]}
         },
         {
           nom: "Riff boogie (style ZZ Top)",
           but: "Le riff de shuffle classique : basse qui marche, root - 5te - 6te.",
           tab: [
-            "Sur la corde de la, root ré (case 5) :",
-            "A|-5-5-7-7-9-9-7-7-|  en shuffle (chaque paire = long-court)",
+            "Sur la corde de mi grave, root la (case 5) :",
+            "E|-5-5-7-7-9-9-7-7-|  en shuffle (chaque paire = long-court)",
             "C'est LA mécanique du blues rock. Palm mute."
           ],
           tempoDepart: 65, unite: "bpm (feel ternaire)",
           palier: "Riff propre et en place à 90 bpm → niveau 3.",
           focus: "La main droite garde le shuffle même quand la gauche bouge.",
           audio: { bpm: 75, notes: [
-            {s:5,f:5,d:0.67},{s:5,f:5,d:0.33},{s:5,f:7,d:0.67},{s:5,f:7,d:0.33},
-            {s:5,f:9,d:0.67},{s:5,f:9,d:0.33},{s:5,f:7,d:0.67},{s:5,f:7,d:0.33}
+            {s:6,f:5,d:0.67},{s:6,f:5,d:0.33},{s:6,f:7,d:0.67},{s:6,f:7,d:0.33},
+            {s:6,f:9,d:0.67},{s:6,f:9,d:0.33},{s:6,f:7,d:0.67},{s:6,f:7,d:0.33}
           ]}
         },
         {
           nom: "Grille 12 mesures (I-IV-V)",
-          but: "Le boogie déplacé sur les 3 accords du blues : ré, sol, la. La vraie structure.",
+          but: "Le boogie déplacé sur les 3 accords du blues en la : la, ré, mi. La vraie structure.",
           tab: [
             "Même riff boogie, transposé :",
-            "I  (ré) : root corde la case 5",
-            "IV (sol): root corde mi grave case 3",
-            "V  (la) : root corde mi grave case 5",
-            "Enchaîne la grille : D D D D / G G D D / A G D A"
+            "I  (la) : root corde mi grave case 5",
+            "IV (ré) : root corde la case 5",
+            "V  (mi) : root corde la case 7",
+            "Enchaîne la grille : A A A A / D D A A / E D A E"
           ],
           tempoDepart: 65, unite: "bpm (feel ternaire)",
           palier: "12 mesures enchaînées sans casser le shuffle = tu accompagnes un blues.",
           focus: "Anticipe le changement d'accord d'un temps. Reste dans le groove.",
           audio: { bpm: 75, notes: [
-            {s:5,f:5,d:0.67},{s:5,f:5,d:0.33},{s:5,f:7,d:0.67},{s:5,f:7,d:0.33},
-            {s:6,f:3,d:0.67},{s:6,f:3,d:0.33},{s:6,f:5,d:0.67},{s:6,f:5,d:0.33},
             {s:6,f:5,d:0.67},{s:6,f:5,d:0.33},{s:6,f:7,d:0.67},{s:6,f:7,d:0.33},
-            {s:5,f:5,d:0.67},{s:5,f:5,d:0.33},{s:5,f:7,d:0.67},{s:5,f:7,d:0.33}
+            {s:5,f:5,d:0.67},{s:5,f:5,d:0.33},{s:5,f:7,d:0.67},{s:5,f:7,d:0.33},
+            {s:5,f:7,d:0.67},{s:5,f:7,d:0.33},{s:5,f:9,d:0.67},{s:5,f:9,d:0.33},
+            {s:6,f:5,d:0.67},{s:6,f:5,d:0.33},{s:6,f:7,d:0.67},{s:6,f:7,d:0.33}
+          ]}
+        }
+      ]
+    },
+    {
+      id: "accords",
+      titre: "Accords & changements",
+      duree: "3-4 min",
+      guitare: "Électro-acoustique",
+      niveaux: [
+        {
+          nom: "Poser les accords",
+          but: "Ton point faible, le premier mur vers le morceau. Poser Am, C, G net, sans friser.",
+          tab: [
+            "Am      C       G",
+            "x02210  x32010  320003",
+            "Pose, gratte lentement corde par corde, vérifie que tout sonne."
+          ],
+          tempoDepart: 60, unite: "à ton rythme",
+          palier: "Les 3 accords sonnent nets → niveau 2.",
+          focus: "Ongles courts, doigts arrondis sur la pointe, pour ne pas étouffer les cordes voisines.",
+          audio: { bpm: 60, notes: [
+            {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:2},
+            {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2},
+            {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2}
+          ]}
+        },
+        {
+          nom: "Changements à 2 accords",
+          but: "Le vrai chantier : changer sans temps mort. Am vers G, puis C vers G.",
+          tab: [
+            "Am -> G -> Am -> G, une frappe par accord, au métronome.",
+            "Le secret : les doigts quittent l'accord AVANT le temps, pas dessus."
+          ],
+          tempoDepart: 50, unite: "bpm (1 accord/temps)",
+          palier: "Changement fluide à 70 bpm → niveau 3.",
+          focus: "Repère les doigts communs entre 2 accords, ne les lève pas pour rien.",
+          audio: { bpm: 60, notes: [
+            {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:1},{c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:1},
+            {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:1},{c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:1}
+          ]}
+        },
+        {
+          nom: "La grille du morceau",
+          but: "Enchaîner les accords de I Need You Tonight : Am, G, D, C, E7. L'ordre exact est sur Songsterr.",
+          tab: [
+            "Am     G      D      C      E7",
+            "x02210 320003 xx0232 x32010 020100",
+            "Lis la suite des accords sur Songsterr, joue-la en place au clic."
+          ],
+          tempoDepart: 50, unite: "bpm",
+          palier: "La grille tourne sans casser le tempo = tu accompagnes le morceau.",
+          focus: "Le E7 (020100) est le plus facile, sers-t'en comme point d'ancrage.",
+          audio: { bpm: 60, notes: [
+            {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:1},{c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:1},
+            {c:[[4,0],[3,2],[2,3],[1,2]],d:1},{c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:1},
+            {c:[[6,0],[5,2],[4,0],[3,1],[2,0],[1,0]],d:2}
           ]}
         }
       ]
@@ -365,7 +422,7 @@ const ROUTINE = {
           palier: "Quand une étape passe à 100%, tu joues la suivante ici.",
           focus: "Qualité et placement. Ancre la boucle : tu progresses vers un vrai morceau.",
           audio: { bpm: 60, notes: [
-            {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
+            {s:3,f:7,bend:9,d:1},{s:3,f:7,d:0.5},{s:3,f:5,d:0.5},{s:4,f:7,d:0.5},{s:4,f:5,d:1}
           ]}
         }
       ]
@@ -384,14 +441,14 @@ const ROUTINE = {
           but: "Jouer sans repincer : la main gauche fait sonner la 2e note (hammer), puis la retire (pull-off).",
           tab: [
             "Hammer-on (h) puis pull-off (p) en penta position 1 :",
-            "G|-10h12p10-10h12p10-|",
-            "D|-10h12p10-10h12p10-|"
+            "G|-5h7p5-5h7p5-|",
+            "D|-5h7p5-5h7p5-|"
           ],
           tempoDepart: 60, unite: "bpm (croches)",
           palier: "Les deux notes sonnent fort et égales à 90 bpm → niveau 2.",
           focus: "La force vient du doigt qui frappe, pas du médiator. Économie de main droite.",
           audio: { bpm: 80, notes: [
-            {s:3,f:10},{s:3,f:12},{s:3,f:10},{s:3,f:12},{s:4,f:10},{s:4,f:12},{s:4,f:10},{s:4,f:12}
+            {s:3,f:5},{s:3,f:7},{s:3,f:5},{s:3,f:7},{s:4,f:5},{s:4,f:7},{s:4,f:5},{s:4,f:7}
           ]}
         },
         {
@@ -399,14 +456,14 @@ const ROUTINE = {
           but: "Enchaîner hammers et pull-offs sur la position 1 entière, un seul coup de médiator par corde.",
           tab: [
             "Monte en hammer, descends en pull-off, 1 attaque par corde :",
-            "e|-10h13-|  B|-10h13-|  G|-10h12-| ... et retour en pull-off"
+            "e|-5h8-|  B|-5h8-|  G|-5h7-| ... et retour en pull-off"
           ],
           tempoDepart: 55, unite: "bpm (croches)",
           palier: "Fluide et régulier à 85 bpm = ta main gauche gagne en autonomie.",
           focus: "C'est ce qui rend le jeu blues coulant. Pas de trou de son entre les notes.",
           audio: { bpm: 80, notes: [
-            {s:6,f:10},{s:6,f:13},{s:5,f:10},{s:5,f:12},{s:4,f:10},{s:4,f:12},
-            {s:3,f:10},{s:3,f:12},{s:2,f:10},{s:2,f:13},{s:1,f:10},{s:1,f:13}
+            {s:6,f:5},{s:6,f:8},{s:5,f:5},{s:5,f:7},{s:4,f:5},{s:4,f:7},
+            {s:3,f:5},{s:3,f:7},{s:2,f:5},{s:2,f:8},{s:1,f:5},{s:1,f:8}
           ]}
         }
       ]
@@ -419,31 +476,31 @@ const ROUTINE = {
       niveaux: [
         {
           nom: "Trouver la tonique",
-          but: "Écouter le ré (la maison du morceau), le chanter, puis le retrouver ailleurs sur le manche.",
+          but: "Écouter le la (la maison du morceau), le chanter, puis le retrouver ailleurs sur le manche.",
           tab: [
-            "Appuie sur Écouter : c'est un RÉ.",
-            "1) Chante-le. 2) Trouve un autre ré sur le manche (case 10 mi grave,",
-            "   ré à vide, case 3 corde si...). 3) Vérifie qu'ils sonnent pareil."
+            "Appuie sur Écouter : c'est un LA.",
+            "1) Chante-le. 2) Trouve un autre la sur le manche (corde de la à vide,",
+            "   case 5 mi grave, case 2 corde sol...). 3) Vérifie qu'ils sonnent pareil."
           ],
           tempoDepart: 60, unite: "à ton rythme",
-          palier: "Tu retrouves le ré sans chercher → niveau 2.",
+          palier: "Tu retrouves le la sans chercher → niveau 2.",
           focus: "Batteur = grande oreille rythmique. On la transforme en oreille mélodique.",
           audio: { bpm: 50, notes: [
-            {s:4,f:0,d:1.5},{r:true,d:1},{s:2,f:3,d:1.5}
+            {s:5,f:0,d:1.5},{r:true,d:1},{s:3,f:2,d:1.5}
           ]}
         },
         {
           nom: "Reconnaître tierce & quinte",
           but: "Les 3 notes qui font le son du blues : la tonique, la tierce mineure, la quinte.",
           tab: [
-            "Écoute : RÉ (tonique) → FA (tierce mineure, le son 'triste') → LA (quinte, le son 'stable').",
+            "Écoute : LA (tonique) → DO (tierce mineure, le son 'triste') → MI (quinte, le son 'stable').",
             "Rejoue-les, puis essaie de les reconnaître les yeux fermés."
           ],
           tempoDepart: 60, unite: "à ton rythme",
           palier: "Tu distingues tierce et quinte à l'oreille = tu improviseras juste.",
           focus: "Chante chaque note avant de la jouer. L'oreille guide les doigts.",
           audio: { bpm: 55, notes: [
-            {s:4,f:0,d:1},{s:4,f:3,d:1},{s:4,f:7,d:1.5}
+            {s:5,f:0,d:1},{s:5,f:3,d:1},{s:5,f:7,d:1.5}
           ]}
         }
       ]
@@ -458,19 +515,19 @@ const ROUTINE = {
           nom: "Question / réponse",
           but: "Faire parler la guitare : une petite phrase (question), un silence, une phrase qui répond.",
           tab: [
-            "Écoute la question (penta ré mineur + bend), puis invente ta réponse dans le silence.",
+            "Écoute la question (penta la mineur + bend), puis invente ta réponse dans le silence.",
             "3-4 notes bien placées suffisent. Le silence fait partie de la musique."
           ],
           tempoDepart: 65, unite: "bpm",
           palier: "Tes réponses tombent en place et sonnent bluesy → niveau 2.",
           focus: "Comme un dialogue de batterie : appel / réponse. Ton terrain.",
           audio: { bpm: 70, notes: [
-            {s:3,f:12,bend:14,d:1},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{r:true,d:2}
+            {s:3,f:7,bend:9,d:1},{s:3,f:5,d:0.5},{s:4,f:7,d:0.5},{r:true,d:2}
           ]}
         },
         {
           nom: "Un chorus libre",
-          but: "12 mesures d'impro en penta ré mineur, avec tes bends et ton vibrato, sur le métronome.",
+          but: "12 mesures d'impro en penta la mineur, avec tes bends et ton vibrato, sur le métronome.",
           tab: [
             "Pose le métro, joue un tour complet en te baladant dans la penta.",
             "Vise le placement et le phrasé, pas la vitesse. Enregistre-toi si tu peux."
@@ -479,8 +536,8 @@ const ROUTINE = {
           palier: "Un chorus qui tient debout tout seul = tu es musicien, plus seulement exécutant.",
           focus: "Respire entre les phrases. Une note tenue avec vibrato vaut dix notes rapides.",
           audio: { bpm: 70, notes: [
-            {s:2,f:13,bend:15,d:1},{s:2,f:10,d:0.5},{s:3,f:12,d:0.5},{s:3,f:10,d:1},
-            {r:true,d:0.5},{s:1,f:10,d:0.5},{s:1,f:13,bend:15,d:1.5}
+            {s:2,f:8,bend:10,d:1},{s:2,f:5,d:0.5},{s:3,f:7,d:0.5},{s:3,f:5,d:1},
+            {r:true,d:0.5},{s:1,f:5,d:0.5},{s:1,f:8,bend:10,d:1.5}
           ]}
         }
       ]
@@ -493,89 +550,89 @@ const MORCEAU = {
   titre: "I Need You Tonight",
   artiste: "ZZ Top",
   album: "Eliminator (1983)",
-  tonalite: "Ré mineur · slow blues 12 mesures",
+  tonalite: "La mineur · slow blues",
   guitare: "Stratocaster",
-  note: "On ne photocopie pas le solo improvisé de Gibbons. On vise un blues en ré mineur convaincant. Licks à caler à l'oreille sur le disque, on affine au fil des sessions.",
+  note: "Objectif : la version fidèle. L'appli est ton PLAN d'entraînement ; ta partition, c'est Songsterr (que tu lis dans ton navigateur). Je ne recopie pas leur tablature. Les tabs ci-dessous sont des repères simplifiés de ma main pour démarrer chaque section ; les notes EXACTES (surtout le solo), tu les lis sur Songsterr et tu les décomposes lentement. Structure Songsterr : Intro, 3 couplets, Guitar Solo.",
   etapes: [
     {
       id: 1,
-      titre: "Le socle : la note de ré et le groove",
-      tempo: "50-60 bpm",
-      description: "Avant les notes, le placement. Joue juste la fondamentale ré en noires, pile sur le clic, en boucle. Objectif : scotché au tempo, comme au drum.",
-      tab: ["E|--10--10--10--10--|"],
+      titre: "Le socle : la tonique la + le groove",
+      tempo: "45-65 bpm",
+      description: "Avant les notes, le placement. Joue juste la fondamentale la en noires, pile sur le clic, en boucle. Scotché au tempo, comme au drum.",
+      tab: ["E|--5--5--5--5--|  (la = corde de mi grave, case 5)"],
       valideQuand: "12 mesures d'affilée parfaitement en place, sans accélérer.",
       prereqs: ["echauffement", "shuffle"],
       niveaux: [{ nom: "Très lent", tempo: 45 }, { nom: "En place", tempo: 55 }, { nom: "À tempo", tempo: 65 }]
     },
     {
       id: 2,
-      titre: "Le motif d'intro / riff en penta",
-      tempo: "60 bpm",
-      description: "Motif court et bluesy en position 1 (case 10). Le 12b est ton bend money de la routine, tout se recoupe. À ajuster à l'oreille sur le disque.",
+      titre: "L'intro / le riff",
+      tempo: "45-75 bpm",
+      description: "La partie d'intro. Notes exactes : Songsterr, section Intro, à décomposer lentement. Ci-dessous, un repère simplifié en penta de la mineur (le 7b est ton bend money de la routine).",
       tab: [
         "e|-------------------------|",
-        "G|--12b----12--10----------|",
-        "D|--------------12--10-----|"
+        "G|--7b----7--5-------------|",
+        "D|--------------7--5-------|"
       ],
-      valideQuand: "Motif propre et en place à 60 bpm, bend juste.",
+      valideQuand: "La partie d'intro propre et en place, bend juste, calée sur Songsterr.",
       prereqs: ["pentatonique", "bends"],
       niveaux: [{ nom: "Découverte", tempo: 45 }, { nom: "Propre", tempo: 60 }, { nom: "À tempo", tempo: 75 }]
     },
     {
       id: 3,
-      titre: "L'accompagnement : la grille d'accords",
-      tempo: "60 bpm",
-      description: "Les trois accords en jeu sobre (une frappe par temps ou arpège lent). Pose l'accord net, laisse sonner. Enchainement de base : Dm ... G ... C ... Dm.",
+      titre: "Les couplets : la grille d'accords",
+      tempo: "50-70 bpm",
+      description: "Les 3 couplets tournent sur les mêmes accords. Am, G, D, C, E7. Lis l'ordre exact et le rythme sur Songsterr, joue-les sobrement, une frappe nette par temps.",
       tab: [
-        "Dm        G         C",
-        "xx0231    320003    x32010"
+        "Am     G      D      C      E7",
+        "x02210 320003 xx0232 x32010 020100"
       ],
-      valideQuand: "Tu poses les 3 accords proprement et tu changes sans casser le tempo lent.",
-      prereqs: ["shuffle", "echauffement"],
+      valideQuand: "Tu enchaînes la grille des couplets sans casser le tempo lent.",
+      prereqs: ["accords", "echauffement"],
       niveaux: [{ nom: "Pose des accords", tempo: 50 }, { nom: "Enchaîné", tempo: 60 }, { nom: "À tempo", tempo: 70 }]
     },
     {
       id: 4,
-      titre: "Un chorus de solo simplifié",
-      tempo: "60 bpm",
-      description: "Un tour de 12 mesures d'impro simple en penta de ré mineur, avec tes bends et ton vibrato. 3-4 notes bien placées valent mieux que des rafales.",
+      titre: "Le solo",
+      tempo: "40-70 bpm",
+      description: "La version fidèle : lis le solo mesure par mesure sur Songsterr (section Guitar Solo) et décompose-le très lentement, un bout à la fois. Repère ci-dessous : la penta de la mineur avec bends/vibrato, ton terrain pour l'apprivoiser avant de coller au disque.",
       tab: [
         "e|-------------------------------|",
-        "B|--13b~~~----13--10-------------|",
-        "G|-----------------12b~~~--------|"
+        "B|--8b~~~----8--5----------------|",
+        "G|-----------------7b~~~---------|"
       ],
-      valideQuand: "Un chorus de 12 mesures en place, bends justes et au moins un vibrato tenu.",
-      prereqs: ["pentatonique", "bends"],
-      niveaux: [{ nom: "Notes lentes", tempo: 45 }, { nom: "Avec bends", tempo: 60 }, { nom: "À tempo", tempo: 70 }]
+      valideQuand: "Le solo (ou sa 1re phrase) en place, bends justes, calé sur Songsterr.",
+      prereqs: ["pentatonique", "bends", "accords"],
+      niveaux: [{ nom: "1re phrase, lent", tempo: 40 }, { nom: "Avec bends", tempo: 55 }, { nom: "À tempo", tempo: 70 }]
     },
     {
       id: 5,
-      titre: "Le morceau complet à tempo",
+      titre: "Le morceau complet",
       tempo: "tempo du disque",
-      description: "Enchainer intro → grille → un chorus de solo → sortie, en place, au tempo lent, sur toute une boucle. C'est le 100%.",
-      tab: ["Enchainement complet, une boucle entière sans t'arrêter."],
-      valideQuand: "Un tour complet convaincant et en place, sans t'arrêter.",
-      prereqs: ["echauffement", "picking", "pentatonique", "bends", "shuffle", "morceau"],
+      description: "Enchaîner intro → 3 couplets → solo → fin, en lisant Songsterr, en place, sur toute une boucle. C'est le 100%, la version fidèle.",
+      tab: ["Enchaîne tout, une boucle entière sans t'arrêter, en suivant Songsterr."],
+      valideQuand: "Un tour complet convaincant et en place, fidèle à la partition.",
+      prereqs: ["echauffement", "picking", "pentatonique", "bends", "shuffle", "accords", "morceau"],
       niveaux: [{ nom: "Au ralenti", tempo: 50 }, { nom: "Sans s'arrêter", tempo: 60 }, { nom: "Tempo disque", tempo: 70 }]
     }
   ]
 };
 
-// Bandes son des étapes du morceau (notes synthétisées depuis les cases).
+// Bandes son des étapes du morceau (repères simplifiés en la mineur, synthétisés).
 const AUDIO_ETAPE = {
-  1: { bpm: 55, notes: [{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1},{s:6,f:10,d:1}] },
+  1: { bpm: 55, notes: [{s:6,f:5,d:1},{s:6,f:5,d:1},{s:6,f:5,d:1},{s:6,f:5,d:1}] },
   2: { bpm: 60, notes: [
-    {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:1}
+    {s:3,f:7,bend:9,d:1},{s:3,f:7,d:0.5},{s:3,f:5,d:0.5},{s:4,f:7,d:0.5},{s:4,f:5,d:1}
   ]},
   3: { bpm: 60, notes: [
-    {c:[[4,0],[3,2],[2,3],[1,1]],d:2}, {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2},
-    {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2}, {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
+    {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:2}, {c:[[6,3],[5,2],[4,0],[3,0],[2,0],[1,3]],d:2},
+    {c:[[4,0],[3,2],[2,3],[1,2]],d:2}, {c:[[5,3],[4,2],[3,0],[2,1],[1,0]],d:2}
   ]},
   4: { bpm: 60, notes: [
-    {s:2,f:13,bend:15,d:1},{s:2,f:13,d:0.5},{s:2,f:10,d:0.5},{s:3,f:12,bend:14,d:2}
+    {s:2,f:8,bend:10,d:1},{s:2,f:8,d:0.5},{s:2,f:5,d:0.5},{s:3,f:7,bend:9,d:2}
   ]},
   5: { bpm: 60, notes: [
-    {s:3,f:12,bend:14,d:1},{s:3,f:12,d:0.5},{s:3,f:10,d:0.5},{s:4,f:12,d:0.5},{s:4,f:10,d:0.5},
-    {c:[[4,0],[3,2],[2,3],[1,1]],d:2}
+    {s:3,f:7,bend:9,d:1},{s:3,f:7,d:0.5},{s:3,f:5,d:0.5},{s:4,f:7,d:0.5},{s:4,f:5,d:0.5},
+    {c:[[5,0],[4,2],[3,2],[2,1],[1,0]],d:2}
   ]}
 };

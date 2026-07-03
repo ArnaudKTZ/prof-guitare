@@ -1,5 +1,5 @@
 // Service worker minimal : cache-first pour un usage hors-ligne.
-const CACHE = 'guitare-v2';
+const CACHE = 'guitare-v3';
 const ASSETS = [
   'index.html',
   'style.css',
