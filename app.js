@@ -724,17 +724,25 @@ function renderPartition() {
         <label class="astuce" style="display:block;"><input type="checkbox" id="pt-loop"> Boucler la sélection</label>
       </div>
     </div>
-    <div id="plan-morceau"></div>
+    <div id="alphatab-viewport"><div id="alphatab"></div></div>
     <div id="partition-status" class="astuce" style="text-align:center;"></div>
-    <div id="alphatab-viewport"><div id="alphatab"></div></div>`;
+    <div id="plan-morceau"></div>`;
   document.getElementById('pt-fichier').addEventListener('change', importPartition);
 }
+
+function ajusterHauteurNav() {
+  const nav = document.getElementById('tabs');
+  if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+}
+window.addEventListener('resize', ajusterHauteurNav);
+window.addEventListener('orientationchange', ajusterHauteurNav);
 
 // ---------- Init ----------
 renderRoutine();
 renderMorceau();
 renderPartition();
 renderMetro();
+ajusterHauteurNav();
 document.getElementById('mini-bpm').textContent = Metro.bpm;
 
 if ('serviceWorker' in navigator) {
