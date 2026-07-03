@@ -565,14 +565,53 @@ function ouvrirPartition() {
     .catch(e => { partitionStatus('Erreur : ' + e.message); partitionChargee = false; });
 }
 
+// Extrait les accords joués (nom + diagramme case par case) dans un intervalle de mesures.
+function accordsDansIntervalle(bars, from, to) {
+  const map = new Map();
+  for (let j = from; j <= to; j++) {
+    (bars[j].voices || []).forEach(v => (v.beats || []).forEach(b => {
+      if (b.hasChord) {
+        const c = b.chord;
+        if (c && c.name && !map.has(c.name)) map.set(c.name, c);
+      }
+    }));
+  }
+  return [...map.values()].map(c => ({ nom: c.name, dia: (c.strings || []).map(f => f < 0 ? 'x' : f).join('-') }));
+}
+
+// Décode le bitmask "fins alternatives" (1ère fin, 2ème fin...) d'une mesure GP en liste lisible.
+function finsAlternatives(mask) {
+  const out = [];
+  for (let b = 1; b <= 8; b++) if (mask & (1 << (b - 1))) out.push(b);
+  return out.join('/');
+}
+
 // Génère un plan d'entraînement à partir de la partition analysée (métadonnées seulement).
-// Le prof : découpe adaptatif (solos plus fins), techniques détectées, coaching par section.
+// Le prof : découpe adaptatif (solos plus fins), techniques détectées, coaching par section,
+// repères de section du fichier (Intro/Couplet/Refrain...), tempo réel par mesure, capo, accords.
 function genererPlan(trackIndex) {
-  if (!alphaApi || !alphaApi.score) return { tempo: 100, sections: [] };
+  if (!alphaApi || !alphaApi.score) return { tempo: 100, tempoLabel: '100', sections: [], capo: 0 };
   const score = alphaApi.score;
+  const staff = score.tracks[trackIndex].staves[0];
+  const bars = staff.bars;
+  const masterBars = score.masterBars;
+  const capo = staff.capo || 0;
   const tempo = score.tempo || 100;
-  const bars = score.tracks[trackIndex].staves[0].bars;
   const N = bars.length;
+
+  // Repères de section (marqueurs du fichier) et tempo réel, mesure par mesure.
+  let curSection = null, curTempo = tempo;
+  const sectionAt = [], tempoAt = [];
+  for (let i = 0; i < N; i++) {
+    const mb = masterBars[i];
+    if (mb) {
+      if (mb.section && (mb.section.text || mb.section.marker)) curSection = mb.section.text || mb.section.marker;
+      if (mb.tempoAutomations && mb.tempoAutomations.length) curTempo = mb.tempoAutomations[0].value;
+    }
+    sectionAt.push(curSection);
+    tempoAt.push(curTempo);
+  }
+
   const bstat = bars.map(bar => {
     let notes = 0, bends = 0, slides = 0, hammers = 0, vib = 0, chords = 0, palm = 0, maxDur = 0, trip = false, fmin = 99, fmax = 0;
     (bar.voices || []).forEach(v => (v.beats || []).forEach(b => {
@@ -613,8 +652,9 @@ function genererPlan(trackIndex) {
     if (a.bends >= 1 && dens >= 4) type = 'Solo / lead';
     else if (a.chords > 0 && dens < 4) type = 'Rythmique';
     else if (dens >= 6) type = 'Solo / lead';
+    const tempoCible = tempoAt[from];
     const base = type === 'Solo / lead' ? 0.4 : 0.5;
-    const tempos = [Math.round(tempo * base), Math.round(tempo * 0.7), tempo];
+    const tempos = [Math.round(tempoCible * base), Math.round(tempoCible * 0.7), tempoCible];
     const tags = [];
     if (a.bends) tags.push(a.bends + ' bend' + (a.bends > 1 ? 's' : ''));
     if (a.vib) tags.push('vibrato');
@@ -624,6 +664,15 @@ function genererPlan(trackIndex) {
     if (a.palm) tags.push('palm mute');
     if (a.maxDur >= 16) tags.push('doubles-croches');
     if (a.trip) tags.push('triolets');
+    let repeats = 0, altEnd = 0;
+    for (let j = from; j <= to; j++) {
+      const mb = masterBars[j];
+      if (!mb) continue;
+      if (mb.repeatCount > repeats) repeats = mb.repeatCount;
+      if (mb.alternateEndings) altEnd |= mb.alternateEndings;
+    }
+    if (repeats > 0) tags.push('⟲ reprise x' + (repeats + 1));
+    if (altEnd) { const fins = finsAlternatives(altEnd); tags.push(fins + (fins.includes('/') ? 'e fins' : 'e fin')); }
     const prereqs = [];
     if (a.bends || a.vib) prereqs.push('Bends & vibrato');
     if (a.hammers || a.slides) prereqs.push('Legato');
@@ -631,10 +680,13 @@ function genererPlan(trackIndex) {
     if (type === 'Solo / lead') prereqs.push('Pentatonique la mineur');
     if (a.chords) prereqs.push('Accords & changements');
     if (a.palm) prereqs.push('Shuffle blues');
-    const coaching = coachingSection(type, a, tempos, [...new Set(prereqs)], tempo);
-    sections.push({ from, to, type, tempos, tags, coaching });
+    const coaching = coachingSection(type, a, tempos, [...new Set(prereqs)], tempoCible);
+    const accords = accordsDansIntervalle(bars, from, to);
+    sections.push({ from, to, type, tempos, tags, coaching, section: sectionAt[from], accords });
   }
-  return { tempo, sections };
+  const tempoUniques = [...new Set(tempoAt)];
+  const tempoLabel = tempoUniques.length > 1 ? `${Math.min(...tempoUniques)}-${Math.max(...tempoUniques)}` : String(tempo);
+  return { tempo, tempoLabel, sections, capo };
 }
 
 function coachingSection(type, a, tempos, prereqs, tempo) {
@@ -666,14 +718,15 @@ function afficherPlan() {
   const cont = document.getElementById('plan-morceau');
   if (!cont) return;
   const ti = parseInt(document.getElementById('pt-piste').value || 0, 10);
-  const { tempo, sections } = genererPlan(ti);
+  const { tempoLabel, sections, capo } = genererPlan(ti);
   if (!sections.length) { cont.innerHTML = ''; return; }
   const faits = LS.get(planKey(), []);
   const pct = Math.round(faits.length / sections.length * 100);
   let html = `
     <div class="carte">
       <h3>Plan d'entraînement de ce morceau 🎯</h3>
-      <p class="astuce">Ton prof a analysé la partition et l'a découpée en ${sections.length} exos (les solos plus finement). Chaque section : ce qu'elle contient, comment l'attaquer, et un bouton pour la jouer en boucle lente. Objectif final : ${tempo} bpm. Fais-les dans l'ordre, valide au fur et à mesure, de A à Z.</p>
+      <p class="astuce">Ton prof a analysé la partition et l'a découpée en ${sections.length} exos (les solos plus finement). Chaque section : ce qu'elle contient, comment l'attaquer, et un bouton pour la jouer en boucle lente. Objectif final : ${tempoLabel} bpm. Fais-les dans l'ordre, valide au fur et à mesure, de A à Z.</p>
+      ${capo ? `<p class="astuce">🎸 Capo détecté : case ${capo}. Les numéros de case affichés dans la tab ne correspondent pas aux notes réellement entendues.</p>` : ''}
       <div class="barre"><span style="width:${pct}%"></span></div>
       <div class="pct">${faits.length}/${sections.length} sections</div>
       <button class="btn ghost" id="plan-stop">⏹ Arrêter la boucle</button>
@@ -681,11 +734,15 @@ function afficherPlan() {
   sections.forEach((s, idx) => {
     const fait = faits.includes(idx);
     const emoji = s.type === 'Solo / lead' ? '🔥' : (s.type === 'Rythmique' ? '🎸' : '🎵');
+    const titre = s.section
+      ? `${s.section} <span class="mesures-sub">(mesures ${s.from + 1}-${s.to + 1})</span>`
+      : `Mesures ${s.from + 1}-${s.to + 1}`;
     html += `
       <div class="carte plan-section ${fait ? 'faite' : ''}">
         <div class="tete"><div class="num">${fait ? '✓' : idx + 1}</div>
-          <h4>${emoji} Mesures ${s.from + 1}-${s.to + 1} · ${s.type}</h4></div>
+          <h4>${emoji} ${titre} · ${s.type}</h4></div>
         ${s.tags.length ? `<div style="margin:6px 0;">${s.tags.map(t => `<span class="pill duree">${t}</span> `).join('')}</div>` : ''}
+        ${s.accords.length ? `<div class="accords-section">${s.accords.map(c => `<span class="accord-chip">${c.nom}<small>${c.dia}</small></span>`).join('')}</div>` : ''}
         <p class="astuce">${s.coaching}</p>
         <div class="info-ligne"><span class="k">Tempos</span><span class="v">${s.tempos.map((t, ti) => `<button type="button" class="tempo-badge${ti === 0 ? ' actif' : ''}" data-idx="${idx}" data-ti="${ti}" style="margin-left:4px">${t}</button>`).join('')}</span></div>
         <div class="actions-exo">
