@@ -205,3 +205,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   text-align: center; font-size: 14px; font-weight: 800; color: var(--accent-2);
   letter-spacing: 0.5px; margin: 6px 0 12px; text-transform: uppercase;
 }
+
+/* Partition (alphaTab) : fond clair pour que la notation noire soit lisible */
+#alphatab-viewport {
+  max-height: 62vh; overflow: auto; margin-top: 10px;
+  background: #f7f4ec; border: 1px solid var(--bordure); border-radius: 12px;
+}
+#alphatab { color: #111; }
+#pt-piste {
+  background: var(--bg-carte-2); color: var(--texte);
+  border: 1px solid var(--bordure); border-radius: 8px; padding: 6px 8px; font-size: 13px;
+}
+#pt-vitesse { accent-color: var(--accent); }

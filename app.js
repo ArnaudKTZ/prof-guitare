@@ -66,6 +66,7 @@ document.querySelectorAll('#tabs button').forEach(b => {
     b.classList.add('actif');
     document.getElementById('vue-' + b.dataset.vue).classList.add('actif');
     if (typeof AudioPlayer !== 'undefined') AudioPlayer.stop();
+    if (b.dataset.vue === 'partition') ouvrirPartition();
   });
 });
 
@@ -405,9 +406,161 @@ document.getElementById('mini-play').addEventListener('click', () => Metro.toggl
 document.getElementById('mini-moins').addEventListener('click', () => Metro.setBpm(Metro.bpm - 5));
 document.getElementById('mini-plus').addEventListener('click', () => Metro.setBpm(Metro.bpm + 5));
 
+// ---------- Vue Partition (import Guitar Pro local, via alphaTab) ----------
+// La partition reste sur l'appareil (localStorage), jamais publiée sur le serveur.
+const ALPHATAB_VER = '1.8.3';
+const ALPHATAB_BASE = `https://cdn.jsdelivr.net/npm/@coderline/alphatab@${ALPHATAB_VER}/dist/`;
+let alphaApi = null, alphaLoading = null, partitionChargee = false;
+
+function partitionStatus(msg) {
+  const el = document.getElementById('partition-status');
+  if (el) el.textContent = msg || '';
+}
+
+function bytesVersB64(bytes) {
+  let bin = ''; const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  return btoa(bin);
+}
+function b64VersBytes(b64) {
+  const bin = atob(b64); const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function chargeAlphaLib() {
+  if (window.alphaTab) return Promise.resolve();
+  if (alphaLoading) return alphaLoading;
+  alphaLoading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = ALPHATAB_BASE + 'alphaTab.min.js';
+    s.onload = () => res();
+    s.onerror = () => rej(new Error('alphaTab n\'a pas pu se charger (connexion internet ?)'));
+    document.head.appendChild(s);
+  });
+  return alphaLoading;
+}
+
+async function initAlpha() {
+  if (alphaApi) return alphaApi;
+  await chargeAlphaLib();
+  alphaApi = new alphaTab.AlphaTabApi(document.getElementById('alphatab'), {
+    core: { fontDirectory: ALPHATAB_BASE + 'font/' },
+    display: { scale: 0.8 },
+    player: {
+      enablePlayer: true,
+      soundFont: ALPHATAB_BASE + 'soundfont/sonivox.sf2',
+      scrollElement: document.getElementById('alphatab-viewport')
+    }
+  });
+  alphaApi.renderStarted.on(() => partitionStatus('Rendu de la partition...'));
+  alphaApi.renderFinished.on(() => partitionStatus(''));
+  alphaApi.scoreLoaded.on(score => remplirPistes(score));
+  alphaApi.playerStateChanged.on(e => {
+    const b = document.getElementById('pt-play');
+    if (b) b.textContent = e.state === 1 ? '⏸ Pause' : '▶ Lecture';
+  });
+  return alphaApi;
+}
+
+function remplirPistes(score) {
+  const sel = document.getElementById('pt-piste');
+  if (!sel || !score) return;
+  sel.innerHTML = '';
+  score.tracks.forEach((t, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = t.name || ('Piste ' + (i + 1));
+    sel.appendChild(o);
+  });
+  let def = score.tracks.findIndex(t => /git/i.test(t.name || ''));
+  if (def < 0) def = 0;
+  sel.value = def;
+  alphaApi.renderTracks([score.tracks[def]]);
+}
+
+function brancherControlesPartition() {
+  if (brancherControlesPartition.fait) return;
+  brancherControlesPartition.fait = true;
+  document.getElementById('pt-play').addEventListener('click', () => alphaApi && alphaApi.playPause());
+  document.getElementById('pt-stop').addEventListener('click', () => alphaApi && alphaApi.stop());
+  document.getElementById('pt-piste').addEventListener('change', e => {
+    if (alphaApi && alphaApi.score) alphaApi.renderTracks([alphaApi.score.tracks[parseInt(e.target.value, 10)]]);
+  });
+  document.getElementById('pt-vitesse').addEventListener('input', e => {
+    const v = parseInt(e.target.value, 10);
+    document.getElementById('pt-vitesse-val').textContent = v + '%';
+    if (alphaApi) alphaApi.playbackSpeed = v / 100;
+  });
+  document.getElementById('pt-metro').addEventListener('change', e => { if (alphaApi) alphaApi.metronomeVolume = e.target.checked ? 1 : 0; });
+  document.getElementById('pt-loop').addEventListener('change', e => { if (alphaApi) alphaApi.isLooping = e.target.checked; });
+}
+
+async function importPartition(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    partitionStatus('Lecture du fichier...');
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    LS.set('partition-nom', file.name);
+    try { LS.set('partition-b64', bytesVersB64(bytes)); }
+    catch (_) { partitionStatus('(Fichier trop lourd pour être mémorisé, mais affiché pour cette session.)'); }
+    const nomEl = document.getElementById('pt-nom');
+    if (nomEl) { nomEl.textContent = file.name; document.getElementById('pt-nom-ligne').style.display = 'block'; }
+    document.getElementById('pt-controls').style.display = 'block';
+    partitionChargee = true;
+    await initAlpha();
+    brancherControlesPartition();
+    alphaApi.load(bytes);
+  } catch (err) {
+    partitionStatus('Erreur : ' + err.message);
+  }
+}
+
+function ouvrirPartition() {
+  if (partitionChargee) return;
+  const b64 = LS.get('partition-b64', null);
+  if (!b64) return;
+  partitionChargee = true;
+  document.getElementById('pt-controls').style.display = 'block';
+  partitionStatus('Chargement de ta partition...');
+  initAlpha()
+    .then(() => { brancherControlesPartition(); alphaApi.load(b64VersBytes(b64)); })
+    .catch(e => { partitionStatus('Erreur : ' + e.message); partitionChargee = false; });
+}
+
+function renderPartition() {
+  const el = document.getElementById('vue-partition');
+  const nom = LS.get('partition-nom', null);
+  el.innerHTML = `
+    <div class="carte">
+      <h3>Ma partition</h3>
+      <p class="astuce">Importe ton fichier Guitar Pro (.gp, .gpx, .gp5...). Il reste sur ton appareil, rien n'est publié en ligne. Tu peux lire, ralentir, et choisir la piste (Git 1 = la guitare principale).</p>
+      <label class="btn valider" style="display:block;text-align:center;cursor:pointer;">
+        ${nom ? 'Remplacer la partition' : 'Importer une partition'}
+        <input id="pt-fichier" type="file" accept=".gp,.gpx,.gp3,.gp4,.gp5,.gpif,.xml,.musicxml" style="display:none">
+      </label>
+      <p class="astuce" id="pt-nom-ligne" style="display:${nom ? 'block' : 'none'};">Fichier : <b id="pt-nom">${nom || ''}</b></p>
+      <div id="pt-controls" style="display:none;margin-top:10px;">
+        <div class="actions-exo">
+          <button class="btn ecouter" id="pt-play">▶ Lecture</button>
+          <button class="btn metro-exo" id="pt-stop">⏹ Stop</button>
+        </div>
+        <div class="info-ligne"><span class="k">Piste</span><span class="v"><select id="pt-piste"></select></span></div>
+        <div class="info-ligne"><span class="k">Vitesse</span><span class="v"><b id="pt-vitesse-val">100%</b></span></div>
+        <input type="range" id="pt-vitesse" min="25" max="100" step="5" value="100" style="width:100%;">
+        <label class="astuce" style="display:block;margin-top:8px;"><input type="checkbox" id="pt-metro"> Métronome pendant la lecture</label>
+        <label class="astuce" style="display:block;"><input type="checkbox" id="pt-loop"> Boucler la sélection</label>
+      </div>
+    </div>
+    <div id="partition-status" class="astuce" style="text-align:center;"></div>
+    <div id="alphatab-viewport"><div id="alphatab"></div></div>`;
+  document.getElementById('pt-fichier').addEventListener('change', importPartition);
+}
+
 // ---------- Init ----------
 renderRoutine();
 renderMorceau();
+renderPartition();
 renderMetro();
 document.getElementById('mini-bpm').textContent = Metro.bpm;
 
